@@ -5,7 +5,7 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
+@* <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-4">
         <section>
@@ -76,6 +76,46 @@
             }
         </section>
     </div>
+</div> *@
+
+<div class="container my-5">
+
+    <section class="mb-10">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 col-xl-4 mx-auto">
+                <h4 class="mb-4">Wilkommen zurück bei ProjectQuizz</h4>
+                <form id="account" method="post">
+                    <div class="form-outline mb-4" data-mdb-input-init>
+                        <input asp-for="Input.UserName" class="form-control" autocomplete="name" aria-required="true" />
+                        <label asp-for="Input.UserName" class="form-label">Username</label>
+                    </div>
+                    <div class="form-outline mb-4" data-mdb-input-init>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                    </div>
+                    <div class="checkbox mb-3">
+                        <label asp-for="Input.RememberMe" class="form-label">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                    <button id="login-submit" type="submit" class="btn btn-dark btn-block mb-4" data-mdb-ripple-init>Login</button>
+                    <a href="#!" class="fw-bold">Passswort vergessen? (Not implemented yet)</a>
+
+                    <hr class="my-5" />
+
+                    <h4 class="mb-4">Ich bin neu hier</h4>
+                    <a type="button" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-dark btn-block mb-5" data-mdb-ripple-init>Register</a>
+@*                     <div class="d-flex flex wrap justify-content-around text-center small">
+                        <a href="#!">Privacy policy</a>
+                        <a href="#!">Terms of use</a>
+                        <a href="#!">Legal notice</a>
+                    </div> *@
+                </form>
+            </div>
+        </div>
+    </section>
+
 </div>
 
 @section Scripts {

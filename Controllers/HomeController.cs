@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Project_Quizz_Frontend.Models;
 using System.Diagnostics;
+using Project_Quizz_Frontend.Areas.Identity.Pages.Account;
 
 namespace Project_Quizz_Frontend.Controllers
 {
@@ -15,6 +16,10 @@ namespace Project_Quizz_Frontend.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
             return View();
         }
 
