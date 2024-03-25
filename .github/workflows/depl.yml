@@ -1,0 +1,33 @@
+name: .NET Build and FTP Deploy
+
+on:
+  workflow_run:
+    workflows: [".NET", "CodeQL", "SonarCloud"]
+    types:
+      - completed
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Publish
+      run: dotnet publish --configuration Release --output publish
+
+    - name: FTP-Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4
+      with:
+        ftp-server: ftp://sr12.firestorm.ch
+        ftp-username: ${{ secrets.FTP_USERNAME }}
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: publish
