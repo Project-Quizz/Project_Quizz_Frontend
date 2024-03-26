@@ -1,0 +1,90 @@
+﻿@model QuizQuestion
+
+<form asp-action="CreateQuiz" method="post" id="quizForm">
+    <div class="form-group">
+        <label for="QuestionText">Question:</label>
+        <input type="text" class="form-control" id="QuestionText" name="QuestionText" value="@Model.QuestionText" required/>
+    </div>
+
+    <!-- Answers in a 2x2 grid -->
+    <div class="row">
+        
+        <!-- Loop to create four answer forms -->
+        @for (var i = 0; i < 4; i++)
+        {
+	        <div class="col-md-6 form-group">
+		        <!-- Label for the answer -->
+		        <label for="@($"Answers_{i}__AnswerText")">Answer @(i + 1):</label>
+		        <!-- Input field for the answer, which is required -->
+
+		        <input type="text" class="form-control" id="@($"Answers_{i}__AnswerText")" name="Answers[@i].AnswerText" required/>
+		        <div class="form-check">
+
+			        <!-- Radio button for the correct answer -->
+			        <input class="form-check-input" type="radio" name="CorrectAnswer" id="@($"Answers_{i}__IsCorrect")" value="@i" @(i == 0 ? "checked" : "")/>
+			        <label class="form-check-label" for="@($"Answers_{i}__IsCorrect")">
+				        Correct Answer
+			        </label>
+		        </div>
+		        <br>
+	        </div>
+            <!-- If i is odd and less than 3, end the current row and start a new row -->
+            @if (i % 2 == 1 && i < 3)
+            {
+                @:</div><div class="row">
+            }
+        }
+    </div>
+
+    <span id="error-message" style="color: red; display: none;">All fields must be filled out.</span>
+    <br>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById("quizForm");
+        const questionInput = document.getElementById("QuestionText");
+        const answerInputs = document.querySelectorAll("input[type='text']");
+        const errorMessage = document.getElementById("error-message");
+
+        form.addEventListener("submit", function(event) {
+            let isFormValid = true;
+            form.classList.remove("was-validated"); // Reset validation state
+
+            // Validate the question
+            if (!questionInput.value.trim()) {
+                questionInput.classList.add("is-invalid");
+                isFormValid = false;
+            } else {
+                questionInput.classList.remove("is-invalid");
+            }
+
+            // Validate answers
+            answerInputs.forEach(function(input) {
+                if (!input.value.trim()) {
+                    input.classList.add("is-invalid");
+                    isFormValid = false;
+                } else {
+                    input.classList.remove("is-invalid");
+                }
+            });
+
+            // Show error message and prevent form submission if invalid
+            if (!isFormValid) {
+                event.preventDefault();
+                errorMessage.style.display = "block";
+            } else {
+                errorMessage.style.display = "none";
+            }
+        });
+
+        // Clear validation errors when the user starts typing
+        document.querySelectorAll('.form-control').forEach(item => {
+            item.addEventListener('input', () => {
+                item.classList.remove('is-invalid');
+                errorMessage.style.display = 'none';
+            });
+        });
+    });
+</script>
