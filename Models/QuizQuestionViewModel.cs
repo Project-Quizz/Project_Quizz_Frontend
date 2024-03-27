@@ -7,15 +7,14 @@ namespace Project_Quizz_Frontend.Models
 	public class QuizQuestionViewModel
 	{
 		public string QuestionText { get; set; }
+		public string UserId { get; set; }
 		public List<AnswerViewModel> Answers { get; set; } = new List<AnswerViewModel>();
+
 	}
 
 	// AnswerViewModel class for quiz questions
 	public class AnswerViewModel
 	{
-		// The unique ID of the answer
-		public int Id { get; set; }
-
 		// The text of the answer, which is required
 		[Required(ErrorMessage = "The answer text is required.")]
 		public string AnswerText { get; set; }

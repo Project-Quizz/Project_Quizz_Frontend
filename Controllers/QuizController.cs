@@ -2,16 +2,19 @@
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Project_Quizz_Frontend.Controllers
 {
 	public class QuizController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
+		private readonly UserManager<IdentityUser> _userManager;
 
-		public QuizController(QuizApiService quizApiService)
+		public QuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
+			_userManager = userManager;
 		}
 
 		[HttpGet]
@@ -30,17 +33,22 @@ namespace Project_Quizz_Frontend.Controllers
 
 			return View(model); }
 
-
 		[HttpPost]
-		public async Task<IActionResult> CreateQuiz(QuizQuestionViewModel model)
+		public async Task<IActionResult> CreateQuizOnDB(QuizQuestionViewModel model, int? CorrectAnswer)
 		{
-			if (!ModelState.IsValid)
+			if (CorrectAnswer.HasValue)
 			{
-				return View(model);
+				for (int i = 0; i < model.Answers.Count; i++)
+				{
+					model.Answers[i].IsCorrectAnswer = i == CorrectAnswer.Value;
+				}
 			}
+
+			model.UserId = _userManager.GetUserId(User);
 
 			var response = await _quizApiService.CreateQuestionAsync(model);
 
+			
 			if (response.IsSuccessStatusCode)
 			{
 				// Handle success (e.g., redirect to a confirmation page)
@@ -48,9 +56,7 @@ namespace Project_Quizz_Frontend.Controllers
 			}
 			else
 			{
-				// Parse the response to display error details from the API
-				ModelState.AddModelError(string.Empty, "API call failed.");
-				return View(model);
+				return RedirectToAction("CreateQuiz");
 			}
 		}
 	}

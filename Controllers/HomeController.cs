@@ -32,24 +32,5 @@ namespace Project_Quizz_Frontend.Controllers
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
-
-		[HttpGet]
-		public IActionResult CreateQuiz()
-		{
-			var model = new QuizQuestionViewModel();
-			return View("~/Views/Quiz/CreateQuiz.cshtml", model);
-		}
-
-		[HttpPost]
-		public IActionResult CreateQuiz(QuizQuestionViewModel quizQuestion, int correctAnswer)
-		{
-			if (ModelState.IsValid)
-			{
-				// Logic to handle the quizQuestion and correctAnswer
-				return RedirectToAction("Index");
-			}
-
-			return View("~/Views/Quiz/CreateQuiz.cshtml", quizQuestion);
-		}
 	}
 }
