@@ -1,108 +1,33 @@
-﻿@using System.Security.Claims
-@model QuizQuestion
-@inject IHttpContextAccessor HttpContextAccessor
+﻿@model Project_Quizz_Frontend.Models.QuizQuestionViewModel
 
 @{
-    // Get the current user's ID from the claims
-    var userId = HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+	ViewData["Title"] = "Create Quiz Question";
 }
 
-<form id="quizForm">
-    <div class="form-group">
-        <label for="QuestionText">Question:</label>
-        <!-- Input field for the question text, required -->
-        <input type="text" class="form-control" id="QuestionText" name="QuestionText" required />
-    </div>
+<h2>@ViewData["Title"]</h2>
 
-    <div class="row">
-        <!-- Loop through 4 answer input groups -->
-        @for (var i = 0; i < 4; i++)
-        {
-            <div class="col-md-6 form-group">
-                <!-- Label for the answer input -->
-                <label for="@($"Answers_{i}__AnswerText")">Answer @(i + 1):</label>
-                <!-- Input field for the answer text, required -->
-                <input type="text" class="form-control" id="@($"Answers_{i}__AnswerText")" name="Answers[@i].AnswerText" required />
-                <div class="form-check">
-                    <!-- Radio button for indicating the correct answer -->
-                    <input class="form-check-input" type="radio" name="CorrectAnswer" id="@($"Answers_{i}__IsCorrect")" value="@i" @(i == 0 ? "checked" : "") />
-                    <label class="form-check-label" for="@($"Answers_{i}__IsCorrect")">
-                        Correct Answer
-                    </label>
-                </div>
-                <br>
-            </div>
-            <!-- If index is odd and less than 3, close current row and start a new row -->
-            @if (i % 2 == 1 && i < 3)
-            {
-                @:</div><div class="row">
-            }
-        }
-    </div>
+<form asp-controller="Quiz" asp-action="CreateQuiz" method="post">
+	<div class="form-group">
+		<label for="QuestionText">Question:</label>
+		<input type="text" class="form-control" id="QuestionText" asp-for="QuestionText" required />
+	</div>
 
-    <!-- Error message displayed if form is not filled out -->
-    <span id="error-message" style="color: red; display: none;">All fields must be filled out.</span>
-    <br>
-    <!-- Submit button for form submission -->
-    <button type="submit" class="btn btn-primary">Submit</button>
-    
-    <script>
-	    // Execute script when DOM content is loaded
-	    document.addEventListener("DOMContentLoaded", function() {
-	        const form = document.getElementById("quizForm");
-	        // Event listener for form submission
-	        form.addEventListener("submit", async function(event) {
-	            event.preventDefault(); // Prevent default form submission behavior
+	<div class="row">
+		@for (var i = 0; i < Model.Answers.Count; i++)
+		{
+			<div class="col-md-6 form-group">
+				<label asp-for="@Model.Answers[i].AnswerText">Answer @(i + 1):</label>
+				<input type="text" class="form-control" asp-for="@Model.Answers[i].AnswerText" required />
 
-	            // Get question text and answers from form inputs
-	            const questionText = document.getElementById("QuestionText").value;
-	            const answers = [];
-	            document.querySelectorAll('.col-md-6.form-group').forEach((group, index) => {
-	                const answerText = group.querySelector("input[type='text']").value;
-	                const isCorrectAnswer = group.querySelector("input[type='radio']").checked;
-	                answers.push({
-	                    AnswerText: answerText,
-	                    IsCorrectAnswer: isCorrectAnswer
-	                });
-	            });
-
-	            // Create data object for sending to server
-	            const data = {
-	                QuestionText: questionText,
-	                UserId: '@userId', // Include current user ID
-	                Answers: answers
-	            };
-
-	            try {
-	                // Send POST request to server with form data
-	                const response = await fetch('https://trusting-black.188-40-219-72.plesk.page/api/QuestionWorkshop/CreateQuestion', {
-	                    method: 'POST',
-	                    headers: {
-	                        'Content-Type': 'application/json',
-	                    },
-	                    body: JSON.stringify(data),
-	                });
-
-	                if (response.ok) {
-	                    console.log('Question Created Successfully');
-	                    // Redirect or clear form as needed after successful creation
-	                    window.location.href = '/some-success-url'; // Redirect to success page or...
-	                    form.reset(); // Clear the form for new entries
-	                } else {
-	                    console.error('Failed to create question');
-	                    // Display error message if failed to create question
-	                    document.getElementById('error-message').textContent = 'Failed to create question. Please try again.';
-	                    document.getElementById('error-message').style.display = "block";
-	                }
-	            } catch (error) {
-	                console.error('Error:', error);
-	                // Display error message if an error occurred during submission
-	                document.getElementById('error-message').textContent = 'An error occurred. Please try again.';
-	                document.getElementById('error-message').style.display = "block";
-	            }
-	        });
-	    });
-	</script>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" asp-for="@Model.Answers[i].IsCorrectAnswer" name="CorrectAnswer" value="@i" />
+					<label class="form-check-label" asp-for="@Model.Answers[i].IsCorrectAnswer">
+						Correct Answer
+					</label>
+				</div>
+				<br>
+			</div>
+		}
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
 </form>
-
-	

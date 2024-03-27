@@ -36,12 +36,12 @@ namespace Project_Quizz_Frontend.Controllers
 		[HttpGet]
 		public IActionResult CreateQuiz()
 		{
-			var model = new QuizQuestion();
+			var model = new QuizQuestionViewModel();
 			return View("~/Views/Quiz/CreateQuiz.cshtml", model);
 		}
 
 		[HttpPost]
-		public IActionResult CreateQuiz(QuizQuestion quizQuestion, int correctAnswer)
+		public IActionResult CreateQuiz(QuizQuestionViewModel quizQuestion, int correctAnswer)
 		{
 			if (ModelState.IsValid)
 			{
