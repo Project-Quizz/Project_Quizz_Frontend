@@ -17,11 +17,13 @@
 		{
 			<div class="col-md-6 form-group">
 				<label asp-for="@Model.Answers[i].AnswerText">Answer @(i + 1):</label>
-				<input type="text" class="form-control" asp-for="@Model.Answers[i].AnswerText" required/>
+				<input type="text" class="form-control" asp-for="@Model.Answers[i].AnswerText" required />
 
 				<div class="form-check">
-					<input class="form-check-input" type="radio" name="CorrectAnswer" value="@i" @(Model.Answers[i].IsCorrectAnswer ? "checked='checked'" : "")/>
-					<label class="form-check-label">
+					<!-- Ensure each radio button has a unique ID -->
+					<input class="form-check-input" type="radio" name="CorrectAnswer" id="CorrectAnswer_@i" value="@i" @(Model.Answers[i].IsCorrectAnswer ? "checked='checked'" : "") />
+					<!-- Associate the label with the radio button by matching the 'for' attribute with the input's 'id' -->
+					<label class="form-check-label" for="CorrectAnswer_@i">
 						Correct Answer
 					</label>
 				</div>
