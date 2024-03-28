@@ -31,7 +31,15 @@ namespace Project_Quizz_Frontend.Controllers
 				}
 			};
 
-			return View(model); }
+			//Set the first answer as the correct one
+			if (model.Answers.Count > 0)
+			{
+				model.Answers[0].IsCorrectAnswer = true;
+			}
+
+			return View(model);
+
+		}
 
 		[HttpPost]
 		public async Task<IActionResult> CreateQuizOnDB(QuizQuestionViewModel model, int? CorrectAnswer)
