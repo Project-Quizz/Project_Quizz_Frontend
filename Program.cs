@@ -19,25 +19,28 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<QuizApiService>(); // This adds IHttpClientFactory to be used for creating HttpClient instances
 builder.Services.AddScoped<QuizApiService>(); // Register your QuizApiService
 
+// Session support
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // Automatische Migration beim Start
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+	var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	dbContext.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+	app.UseMigrationsEndPoint();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -45,11 +48,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "default",
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

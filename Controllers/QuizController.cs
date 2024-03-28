@@ -42,28 +42,34 @@ namespace Project_Quizz_Frontend.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateQuizOnDB(QuizQuestionViewModel model, int? CorrectAnswer)
+		public async Task<IActionResult> CreateQuizOnDB(QuizQuestionViewModel model, int? correctAnswer)
 		{
-			if (CorrectAnswer.HasValue)
+			// Set the correct answer based on the selected index
+			if (correctAnswer.HasValue)
 			{
 				for (int i = 0; i < model.Answers.Count; i++)
 				{
-					model.Answers[i].IsCorrectAnswer = i == CorrectAnswer.Value;
+					model.Answers[i].IsCorrectAnswer = i == correctAnswer.Value;
 				}
 			}
 
+			// Set the user ID from the current user
 			model.UserId = _userManager.GetUserId(User);
 
+			// Call the API service to create the question
 			var response = await _quizApiService.CreateQuestionAsync(model);
 
-			
+			// Check if the request was successful
 			if (response.IsSuccessStatusCode)
 			{
-				// Handle success (e.g., redirect to a confirmation page)
-				return RedirectToAction("Index", "Home");
+				// Display a success message
+				TempData["SuccessMessage"] = "Your question has been successfully submitted!";
+				return RedirectToAction("CreateQuiz");
 			}
 			else
 			{
+				// Display an error message
+				TempData["ErrorMessage"] = "There was an error submitting your question. Please try again!";
 				return RedirectToAction("CreateQuiz");
 			}
 		}

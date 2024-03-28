@@ -1,34 +1,60 @@
-﻿@model Project_Quizz_Frontend.Models.QuizQuestionViewModel
-
-@{
+﻿@{
 	ViewData["Title"] = "Create Quiz Question";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+	<div class="alert alert-success">
+		@TempData["SuccessMessage"]
+	</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger">
+		@TempData["ErrorMessage"]
+	</div>
 }
 
 <h2>@ViewData["Title"]</h2>
 
 <form asp-controller="Quiz" asp-action="CreateQuizOnDB" method="post">
-	<div class="form-group">
+	
+	<!--The "asp-for" does NOT work combined with TempData. -->
+	@*
+		<div class="form-group">
 		<label for="QuestionText">Question:</label>
 		<input type="text" class="form-control" id="QuestionText" asp-for="QuestionText" required />
+		</div>
+	*@
+
+	<div class="form-group">
+		<label for="QuestionText">Question:</label>
+		<input type="text" class="form-control" id="QuestionText" name="QuestionText" value="@Model.QuestionText" required/>
 	</div>
 
-	<div class="row">
-		@for (var i = 0; i < Model.Answers.Count; i++)
-		{
-			<div class="col-md-6 form-group">
-				<label asp-for="@Model.Answers[i].AnswerText">Answer @(i + 1):</label>
-				<input type="text" class="form-control" asp-for="@Model.Answers[i].AnswerText" required />
 
-				<div class="form-check">
-					<!-- Ensure each radio button has a unique ID -->
-					<input class="form-check-input" type="radio" name="CorrectAnswer" id="CorrectAnswer_@i" value="@i" @(Model.Answers[i].IsCorrectAnswer ? "checked='checked'" : "") />
-					<!-- Associate the label with the radio button by matching the 'for' attribute with the input's 'id' -->
-					<label class="form-check-label" for="CorrectAnswer_@i">
-						Correct Answer
-					</label>
+	<div class="row">
+		@{
+			int i = 0;
+			foreach (var answer in Model.Answers)
+			{
+				<div class="col-md-6 form-group">
+					<label for="AnswerText_@i">Answer @(i + 1):</label>
+					<input type="text" class="form-control" id="AnswerText_@i" name="Answers[@i].AnswerText" value="@answer.AnswerText" required/>
+
+					<div class="form-check">
+						<!-- Ensure each radio button has a unique ID -->
+						<input class="form-check-input" type="radio" name="correctAnswer" id="correctAnswer_@i" value="@i" @(answer.IsCorrectAnswer ? "checked='checked'" : "")/>
+						<!-- Associate the label with the radio button by matching the 'for' attribute with the input's 'id' -->
+						<label class="form-check-label" for="correctAnswer_@i">
+							Correct Answer
+						</label>
+					</div>
+					<br>
 				</div>
-				<br>
-			</div>
+				i++;
+			}
 		}
 	</div>
 	<button type="submit" class="btn btn-primary">Submit</button>
