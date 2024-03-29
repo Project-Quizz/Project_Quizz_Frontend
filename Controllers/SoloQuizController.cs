@@ -52,22 +52,10 @@ namespace Project_Quizz_Frontend.Controllers
 			// Set the IsAnswerCorrect property
 			quiz.IsAnswerCorrect = isCorrect;
 
-			switch (action)
-			{
-				case "restart":
-					return RedirectToAction("SoloQuiz");
-				case "next":
-					if (quiz.HasNextQuiz)
-					{
-						return RedirectToAction("NextQuiz");
-					}
-					break;
-			}
 			return View("~/Views/Quiz/SoloQuiz.cshtml", quiz);
 		}
 
-
-		public IActionResult NextQuiz()
+		public IActionResult NextQuestion()
 		{
 			var nextQuiz = new SoloQuizModel
 			{

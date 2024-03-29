@@ -8,7 +8,9 @@
 		@if (Model.HasNextQuiz)
 		{
 			<button type="submit" name="action" value="next" class="btn btn-success">Next Quiz</button>
+			<br/>
 		}
+		<br />
 	}
 	else
 	{
@@ -37,6 +39,5 @@
 	</div>
 	<button type="submit" class="btn btn-primary">Submit Answer</button>
 	<br /><br />
-	<button type="submit" name="action" value="restart" class="btn btn-primary">Restart</button>
 	<a href="@Url.Action("Index", "Home")" class="btn btn-default">Go Home</a>
 </form>
