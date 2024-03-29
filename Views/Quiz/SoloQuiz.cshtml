@@ -1,0 +1,42 @@
+﻿@model Project_Quizz_Frontend.Models.SoloQuizModel
+
+@if (Model.IsAnswerCorrect.HasValue)
+{
+	if (Model.IsAnswerCorrect.Value)
+	{
+		<div class="alert alert-success">Correct answer!</div>
+		@if (Model.HasNextQuiz)
+		{
+			<button type="submit" name="action" value="next" class="btn btn-success">Next Quiz</button>
+		}
+	}
+	else
+	{
+		<div class="alert alert-danger">Wrong answer!</div>
+	}
+}
+
+@{
+	ViewData["Title"] = "Solo Quiz";
+}
+
+@{
+	int counter = 0;
+}
+
+<h2>@ViewData["Title"]</h2>
+<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
+	<div>
+		<p>@Model.QuestionText</p>
+		@foreach (var answer in Model.Answers)
+		{
+			<div>
+				<input type="radio" name="selectedAnswerId" value="@answer.AnswerId" @(counter++ == 0 ? "checked" : "") /> @answer.AnswerText
+			</div>
+		}
+	</div>
+	<button type="submit" class="btn btn-primary">Submit Answer</button>
+	<br /><br />
+	<button type="submit" name="action" value="restart" class="btn btn-primary">Restart</button>
+	<a href="@Url.Action("Index", "Home")" class="btn btn-default">Go Home</a>
+</form>
