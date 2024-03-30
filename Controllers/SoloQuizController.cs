@@ -54,23 +54,5 @@ namespace Project_Quizz_Frontend.Controllers
 
 			return View("~/Views/Quiz/SoloQuiz.cshtml", quiz);
 		}
-
-		public IActionResult NextQuestion()
-		{
-			var nextQuiz = new SoloQuizModel
-			{
-				QuestionId = 2,
-				QuestionText = "What is the capital of Germany?",
-				Answers = new List<QuizAnswerModel>
-				{
-					new QuizAnswerModel { AnswerId = 5, AnswerText = "Paris", IsCorrect = false },
-					new QuizAnswerModel { AnswerId = 6, AnswerText = "Rome", IsCorrect = false },
-					new QuizAnswerModel { AnswerId = 7, AnswerText = "Berlin", IsCorrect = true },
-					new QuizAnswerModel { AnswerId = 8, AnswerText = "Tokyo", IsCorrect = false }
-				},
-			};
-			HttpContext.Session.Set("quiz", nextQuiz);
-			return View("~/Views/Quiz/SoloQuiz.cshtml", nextQuiz);
-		}
 	}
 }

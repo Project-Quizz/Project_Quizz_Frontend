@@ -1,43 +1,55 @@
 ﻿@model Project_Quizz_Frontend.Models.SoloQuizModel
 
-@if (Model.IsAnswerCorrect.HasValue)
-{
-	if (Model.IsAnswerCorrect.Value)
-	{
-		<div class="alert alert-success">Correct answer!</div>
-		@if (Model.HasNextQuiz)
-		{
-			<button type="submit" name="action" value="next" class="btn btn-success">Next Quiz</button>
-			<br/>
-		}
-		<br />
-	}
-	else
-	{
-		<div class="alert alert-danger">Wrong answer!</div>
-	}
-}
-
 @{
 	ViewData["Title"] = "Solo Quiz";
 }
 
-@{
-	int counter = 0;
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.IsAnswerCorrect.HasValue)
+{
+	<div class="alert @(Model.IsAnswerCorrect.Value ? "alert-success" : "alert-danger")">
+		@(Model.IsAnswerCorrect.Value ? "Correct answer!" : "Wrong answer!")
+	</div>
 }
 
-<h2>@ViewData["Title"]</h2>
 <form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
-	<div>
-		<p>@Model.QuestionText</p>
-		@foreach (var answer in Model.Answers)
+	<div class="form-group">
+		<label for="QuestionText">Question:</label>
+		<p id="QuestionText"><b>@Model.QuestionText</b></p>
+	</div>
+
+	<div class="row">
+		@for (int counter = 0; counter < Model.Answers.Count; counter++)
 		{
-			<div>
-				<input type="radio" name="selectedAnswerId" value="@answer.AnswerId" @(counter++ == 0 ? "checked" : "") /> @answer.AnswerText
+			var answer = Model.Answers[counter];
+			<div class="col-md-6 form-group">
+				<label for="@answer.AnswerId">Answer @(counter + 1):</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="@answer.AnswerId" name="selectedAnswerId" value="@answer.AnswerId" @(counter == 0 ? "checked" : "") />
+					<label class="form-check-label" style="font-weight: bold" for="@answer.AnswerId">@answer.AnswerText</label>
+				</div>
 			</div>
 		}
 	</div>
+	<br/>
 	<button type="submit" class="btn btn-primary">Submit Answer</button>
+	@if (Model.IsAnswerCorrect.HasValue && Model.HasNextQuiz)
+	{
+		//Ändern zu submit, wenn next quiz funktioniert
+		<button type="button" name="action" value="next" class="btn btn-success">Next Question</button>
+	}
 	<br /><br />
 	<a href="@Url.Action("Index", "Home")" class="btn btn-default">Go Home</a>
 </form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	$('form').on('submit', function (e) {
+		e.preventDefault();
+		var submitButton = $('button[type="submit"]');
+		submitButton.prop('disabled', true);
+		submitButton.text("Submitting...");
+		setTimeout(() => this.submit(), 100);
+	});
+</script>
