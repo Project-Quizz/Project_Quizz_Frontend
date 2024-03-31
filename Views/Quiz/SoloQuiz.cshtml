@@ -42,14 +42,3 @@
 	<br /><br />
 	<a href="@Url.Action("Index", "Home")" class="btn btn-default">Go Home</a>
 </form>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-	$('form').on('submit', function (e) {
-		e.preventDefault();
-		var submitButton = $('button[type="submit"]');
-		submitButton.prop('disabled', true);
-		submitButton.text("Submitting...");
-		setTimeout(() => this.submit(), 100);
-	});
-</script>
