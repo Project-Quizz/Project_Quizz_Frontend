@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Project_Quizz_API">
       <HintPath>..\Project_Quizz_API\bin\Debug\net8.0\Project_Quizz_API.dll</HintPath>
     </Reference>

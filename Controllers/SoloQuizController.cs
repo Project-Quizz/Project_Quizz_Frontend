@@ -1,58 +1,65 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using Project_Quizz_Frontend.Models;
-using System.Collections.Generic;
+using Project_Quizz_Frontend.Services;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Project_Quizz_Frontend.Controllers
+public class SoloQuizController : Controller
 {
-	public static class SessionExtensions
+	private readonly QuizApiService _quizApiService;
+
+	public SoloQuizController(QuizApiService quizApiService)
 	{
-		public static void Set<T>(this ISession session, string key, T value)
+		_quizApiService = quizApiService;
+	}
+
+	public async Task<IActionResult> SoloQuiz(int sessionId = 9) // Assuming a fixed session ID for now
+	{
+		var userId = "PylzTest"; // Assuming a fixed user ID for now
+		var quizSession = await _quizApiService.GetSingleQuizSession(sessionId, userId);
+
+		if (quizSession != null)
 		{
-			session.SetString(key, JsonConvert.SerializeObject(value));
+			// Directly pass the fetched QuizSession to the view
+			return View("~/Views/Quiz/SoloQuiz.cshtml", quizSession);
 		}
 
-		public static T Get<T>(this ISession session, string key)
+		// Handle case where quiz session is not found or an error occurs
+		return RedirectToAction("Error", "Home");
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> SubmitAnswer(SoloQuizModel quizSession, int selectedAnswerId, string action)
+	{
+		// Update the current question index based on the action
+		if (action == "next" && quizSession.HasNextQuestion)
 		{
-			var value = session.GetString(key);
-			return value == null ? default : JsonConvert.DeserializeObject<T>(value);
+			quizSession.CurrentQuestionIndex++;
+		}
+
+		// Check if the selected answer is correct for the current question
+		var currentQuestion = quizSession.Questions[quizSession.CurrentQuestionIndex];
+		var isCorrect = currentQuestion.Answers.Any(a => a.AnswerId == selectedAnswerId && a.IsCorrect);
+
+		// Update the quiz session state accordingly
+		quizSession.Questions[quizSession.CurrentQuestionIndex].IsAnswerCorrect = isCorrect;
+
+		// If there are more questions, stay on the quiz; otherwise, go to quiz completion
+		if (quizSession.HasNextQuestion)
+		{
+			return View("~/Views/Quiz/SoloQuiz.cshtml", quizSession);
+		}
+		else
+		{
+			// Optionally, update the quiz session to mark it as completed
+			// await _quizApiService.UpdateSingleQuizSession(quizSession);
+			return RedirectToAction("QuizComplete");
 		}
 	}
 
-	public class SoloQuizController : Controller
+	public IActionResult QuizComplete()
 	{
-		public IActionResult SoloQuiz()
-		{
-			var quiz = new SoloQuizModel
-			{
-				QuestionId = 1,
-				QuestionText = "What is the capital of France?",
-				Answers = new List<QuizAnswerModel>
-				{
-					new QuizAnswerModel { AnswerId = 1, AnswerText = "Paris", IsCorrect = true },
-					new QuizAnswerModel { AnswerId = 2, AnswerText = "Berlin", IsCorrect = false },
-					new QuizAnswerModel { AnswerId = 3, AnswerText = "Madrid", IsCorrect = false },
-					new QuizAnswerModel { AnswerId = 4, AnswerText = "Rome", IsCorrect = false }
-				}
-			};
-
-			HttpContext.Session.Set("quiz", quiz);
-			return View("~/Views/Quiz/SoloQuiz.cshtml", quiz);
-		}
-
-		[HttpPost]
-		public IActionResult SubmitAnswer(int selectedAnswerId, string action)
-		{
-			var quiz = HttpContext.Session.Get<SoloQuizModel>("quiz");
-			var selectedAnswer = quiz.Answers.FirstOrDefault(a => a.AnswerId == selectedAnswerId);
-			bool isCorrect = selectedAnswer != null && selectedAnswer.IsCorrect;
-
-			// Set the IsAnswerCorrect property
-			quiz.IsAnswerCorrect = isCorrect;
-
-			return View("~/Views/Quiz/SoloQuiz.cshtml", quiz);
-		}
+		// Display the final score or a completion message
+		return View();
 	}
 }
