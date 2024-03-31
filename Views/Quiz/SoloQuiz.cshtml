@@ -1,0 +1,44 @@
+﻿@model Project_Quizz_Frontend.Models.SoloQuizModel
+
+@{
+	ViewData["Title"] = "Solo Quiz";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model.IsAnswerCorrect.HasValue)
+{
+	<div class="alert @(Model.IsAnswerCorrect.Value ? "alert-success" : "alert-danger")">
+		@(Model.IsAnswerCorrect.Value ? "Correct answer!" : "Wrong answer!")
+	</div>
+}
+
+<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
+	<div class="form-group">
+		<label for="QuestionText">Question:</label>
+		<p id="QuestionText"><b>@Model.QuestionText</b></p>
+	</div>
+
+	<div class="row">
+		@for (int counter = 0; counter < Model.Answers.Count; counter++)
+		{
+			var answer = Model.Answers[counter];
+			<div class="col-md-6 form-group">
+				<label for="@answer.AnswerId">Answer @(counter + 1):</label>
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="@answer.AnswerId" name="selectedAnswerId" value="@answer.AnswerId" @(counter == 0 ? "checked" : "") />
+					<label class="form-check-label" style="font-weight: bold" for="@answer.AnswerId">@answer.AnswerText</label>
+				</div>
+			</div>
+		}
+	</div>
+	<br/>
+	<button type="submit" class="btn btn-primary">Submit Answer</button>
+	@if (Model.IsAnswerCorrect.HasValue && Model.HasNextQuiz)
+	{
+		//Ändern zu submit, wenn next quiz funktioniert
+		<button type="button" name="action" value="next" class="btn btn-success">Next Question</button>
+	}
+	<br /><br />
+	<a href="@Url.Action("Index", "Home")" class="btn btn-default">Go Home</a>
+</form>
