@@ -8,6 +8,10 @@ namespace Project_Quizz_Frontend.Models
 	{
 		public string QuestionText { get; set; }
 		public string UserId { get; set; }
+		public CategorieIdDto Categorie { get; set; } = new CategorieIdDto
+		{
+			CategorieId = 1
+		};
 		public List<AnswerViewModel> Answers { get; set; } = new List<AnswerViewModel>();
 
 	}
@@ -21,5 +25,10 @@ namespace Project_Quizz_Frontend.Models
 
 		// A flag indicating whether the answer is correct or not
 		public bool IsCorrectAnswer { get; set; }
+	}
+
+	public class CategorieIdDto
+	{
+		public int CategorieId { get; set; }
 	}
 }
