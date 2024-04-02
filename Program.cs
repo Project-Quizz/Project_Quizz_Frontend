@@ -16,8 +16,17 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 
 // Register HttpClient and QuizApiService
+
+//API Key implementation
+//var apiKey = builder.Configuration["ApiKey"];
+//builder.Services.AddTransient(_ => new ApiKeyHandler(apiKey));
+//builder.Services.AddHttpClient<QuizApiService>()
+//    .AddHttpMessageHandler<ApiKeyHandler>();
+
 builder.Services.AddHttpClient<QuizApiService>(); // This adds IHttpClientFactory to be used for creating HttpClient instances
 builder.Services.AddScoped<QuizApiService>(); // Register your QuizApiService
+
+
 
 // Session support
 builder.Services.AddSession();
