@@ -23,14 +23,14 @@
 	<!--The "asp-for" does NOT work combined with TempData. -->
 	@*
 		<div class="form-group">
-		<label for="QuestionText">Question:</label>
-		<input type="text" class="form-control" id="QuestionText" asp-for="QuestionText" required />
+		<label for="questionText">Question:</label>
+		<input type="text" class="form-control" id="questionText" asp-for="questionText" required />
 		</div>
 	*@
 
 	<div class="form-group">
 		<label for="QuestionText">Question:</label>
-		<input type="text" class="form-control" id="QuestionText" name="QuestionText" value="@Model.QuestionText" required/>
+		<input type="text" class="form-control" id="QuestionText" name="questionText" value="@Model.QuestionText" required/>
 	</div>
 
 
@@ -40,8 +40,8 @@
 			foreach (var answer in Model.Answers)
 			{
 				<div class="col-md-6 form-group">
-					<label for="AnswerText_@i">Answer @(i + 1):</label>
-					<input type="text" class="form-control" id="AnswerText_@i" name="Answers[@i].AnswerText" value="@answer.AnswerText" required/>
+					<label for="answerText_@i">Answer @(i + 1):</label>
+					<input type="text" class="form-control" id="answerText_@i" name="answers[@i].answerText" value="@answer.AnswerText" required/>
 
 					<div class="form-check">
 						<!-- Ensure each radio button has a unique ID -->

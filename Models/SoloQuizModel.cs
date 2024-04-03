@@ -1,46 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Project_Quizz_Frontend.Models
 {
 	public class QuizAttemptModel
 	{
-		public int Id { get; set; }
-		public int AskedQuestionId { get; set; }
-		public int? GivenAnswerId { get; set; }
-		public DateTime? AnswerDate { get; set; }
+		public int id { get; set; }
+		public int askedQuestionId { get; set; }
+		public int? givenAnswerId { get; set; }
+		public DateTime? answerDate { get; set; }
 	}
 
 	public class QuizQuestionModel
 	{
-		public int Id { get; set; }
+		public int id { get; set; }
 		[Required]
-		public string QuestionText { get; set; }
-		public List<QuizAnswerModel> Answers { get; set; }
+		public string questionText { get; set; }
+		public List<QuizAnswerModel> answers { get; set; }
 	}
 
 	public class QuizAnswerModel
 	{
 		public int id { get; set; }
-		public string AnswerText { get; set; }
-		public bool IsCorrectAnswer { get; set; }
+		public string answerText { get; set; }
+		public bool isCorrectAnswer { get; set; }
 	}
 
 	public class SoloQuizModel
 	{
 		public int id { get; set; }
-		public string UserId { get; set; }
-		public int Score { get; set; }
-		public DateTime CreateDate { get; set; }
-		public bool QuizCompleted { get; set; }
-		public int QuestionCount { get; set; }
-		public List<QuizAttemptModel> QuizAttempts { get; set; }
+		public string userId { get; set; }
+		public int score { get; set; }
+		public DateTime createDate { get; set; }
+		public bool quizCompleted { get; set; }
+		public int questionCount { get; set; }
+		public List<QuizAttemptModel> quiz_Attempts { get; set; }
 		public List<QuizQuestionModel> question { get; set; }
 
 		// Additional properties to support quiz flow
 		public int CurrentQuestionIndex { get; set; } = 0;
 		public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
-		public bool HasNextQuestion => CurrentQuestionIndex + 1 < question.Count;
+		public bool HasNextQuestion => question != null && question.Count > 0 && CurrentQuestionIndex + 1 < question.Count;
 	}
 }

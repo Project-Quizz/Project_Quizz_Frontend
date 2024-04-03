@@ -45,21 +45,21 @@ namespace Project_Quizz_Frontend.Controllers
 			var currentQuestion = quizSession.CurrentQuestion;
 
 			// Determine if the selected answer is correct
-			var isAnswerCorrect = currentQuestion.Answers.Any(a => a.id == selectedAnswerId && a.IsCorrectAnswer);
+			var isAnswerCorrect = currentQuestion.answers.Any(a => a.id == selectedAnswerId && a.isCorrectAnswer);
 
 			// Update attempt for the current question with selected answer and correctness
-			var currentAttempt = quizSession.QuizAttempts.FirstOrDefault(a => a.AskedQuestionId == currentQuestion.Id);
+			var currentAttempt = quizSession.quiz_Attempts.FirstOrDefault(a => a.askedQuestionId == currentQuestion.id);
 			if (currentAttempt != null)
 			{
-				currentAttempt.GivenAnswerId = selectedAnswerId;
+				currentAttempt.givenAnswerId = selectedAnswerId;
 				// Optionally update answerDate if your model and requirements include tracking the answer time
-				currentAttempt.AnswerDate = DateTime.UtcNow;
+				currentAttempt.answerDate = DateTime.UtcNow;
 			}
 
 			// Update the score if the answer is correct
 			if (isAnswerCorrect)
 			{
-				quizSession.Score++;
+				quizSession.score++;
 			}
 
 			// Prepare to move to the next question or end the quiz
@@ -71,7 +71,7 @@ namespace Project_Quizz_Frontend.Controllers
 			else if (!quizSession.HasNextQuestion)
 			{
 				// Mark the quiz as completed if there are no more questions
-				quizSession.QuizCompleted = true;
+				quizSession.quizCompleted = true;
 			}
 
 			// Call API to update the quiz session state
@@ -84,10 +84,10 @@ namespace Project_Quizz_Frontend.Controllers
 			}
 
 			// Determine redirect action after handling answer submission
-			if (quizSession.QuizCompleted)
+			if (quizSession.quizCompleted)
 			{
 				// Redirect to a completion page if the quiz is complete
-				return RedirectToAction("QuizComplete", new { score = quizSession.Score });
+				return RedirectToAction("QuizComplete", new { score = quizSession.score });
 			}
 			else
 			{

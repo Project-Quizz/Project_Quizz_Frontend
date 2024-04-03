@@ -54,13 +54,13 @@ public class QuizApiService
 		var updatePayload = new
 		{
 			id = quizSession.id,
-			score = quizSession.Score,
-			quizCompleted = quizSession.QuizCompleted,
-			quiz_Attempts = quizSession.QuizAttempts.Select(attempt => new
+			score = quizSession.score,
+			quizCompleted = quizSession.quizCompleted,
+			quiz_Attempts = quizSession.quiz_Attempts.Select(attempt => new
 			{
-				id = attempt.Id,
-				givenAnswerId = attempt.GivenAnswerId,
-				answerDate = attempt.AnswerDate.HasValue ? attempt.AnswerDate.Value.ToString("o") : null
+				id = attempt.id,
+				givenAnswerId = attempt.givenAnswerId,
+				answerDate = attempt.answerDate.HasValue ? attempt.answerDate.Value.ToString("o") : null
 			}).ToList()
 		};
 
