@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Project_Quizz_Frontend.Models;
 using System.Diagnostics;
 
 namespace Project_Quizz_Frontend.Controllers
 {
-	public class HomeController : Controller
+    [Authorize]
+    public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
 
@@ -15,10 +17,6 @@ namespace Project_Quizz_Frontend.Controllers
 
 		public IActionResult Index()
 		{
-			if (User.Identity?.IsAuthenticated != true)
-			{
-				return RedirectToPage("/Account/Login", new { area = "Identity" });
-			}
 			return View();
 		}
 

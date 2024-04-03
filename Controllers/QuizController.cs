@@ -3,10 +3,12 @@ using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project_Quizz_Frontend.Controllers
 {
-	public class QuizController : Controller
+    [Authorize]
+    public class QuizController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;

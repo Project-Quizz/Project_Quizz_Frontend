@@ -1,35 +1,46 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace Project_Quizz_Frontend.Models // Replace with your actual namespace
+namespace Project_Quizz_Frontend.Models
 {
 	public class SoloQuizModel
 	{
-		public int Id { get; set; }
+		public int id { get; set; }
+		public string userId { get; set; }
+		public int score { get; set; }
+		public DateTime createDate { get; set; }
+		public bool quizCompleted { get; set; }
+		public int questionCount { get; set; }
+		public List<QuizAttemptModel> quiz_Attempts { get; set; }
+		public List<QuizQuestionModel> question { get; set; }
 
-		[Required] public string QuestionText { get; set; }
+		// Additional properties to support quiz flow
+		public int CurrentQuestionIndex { get; set; } = 0;
+		public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
+		public bool HasNextQuestion => question != null && question.Count > 0 && CurrentQuestionIndex + 1 < question.Count;
+	}
+	public class QuizAttemptModel
+	{
+		public int id { get; set; }
+		public int askedQuestionId { get; set; }
+		public int? givenAnswerId { get; set; }
+		public DateTime? answerDate { get; set; }
+	}
 
-		public List<QuizAnswerModel> Answers { get; set; } = new List<QuizAnswerModel>();
-
-		// Indicate if there is a next quiz available (it is available if the current QuestionId is less than the total number of questions)
-		public int QuestionId { get; set; }
-
-		// The ID of the selected answer
-		public int SelectedAnswerId { get; set; }
-
-		// Total number of questions, hardcoded to 2 for now
-		public int TotalQuestions { get; set; } = 2;
-
-		// Update HasNextQuiz to check if QuestionId is less than TotalQuestions
-		public bool HasNextQuiz => QuestionId < TotalQuestions;
-		public bool? IsAnswerCorrect { get; set; }
+	public class QuizQuestionModel
+	{
+		public int id { get; set; }
+		[Required]
+		public string questionText { get; set; }
+		public List<QuizAnswerModel> answers { get; set; }
 	}
 
 	public class QuizAnswerModel
 	{
-		public int AnswerId { get; set; }
-
-		public string AnswerText { get; set; }
-
-		public bool IsCorrect { get; set; }
+		public int id { get; set; }
+		public string answerText { get; set; }
+		public bool isCorrectAnswer { get; set; }
 	}
 }
