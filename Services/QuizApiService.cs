@@ -16,9 +16,9 @@ public class QuizApiService
 		_httpClient = httpClient;
 	}
 
-	public async Task<SoloQuizModel> GetSingleQuizSession(int sessionId, string userId)
+	public async Task<SoloQuizModel> GetSingleQuizSession(int singleQuizId, string userId)
 	{
-		var response = await _httpClient.GetFromJsonAsync<SoloQuizModel>($"{_apiBaseUrl}/SingleQuizWorkshop/GetSingleQuizSession?sessionId={sessionId}&userId={userId}");
+		var response = await _httpClient.GetFromJsonAsync<SoloQuizModel>($"{_apiBaseUrl}/SingleQuizWorkshop/GetSingleQuizSession?id={singleQuizId}&userId={userId}");
 		return response;
 	}
 
@@ -46,5 +46,28 @@ public class QuizApiService
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
 		var response = await _httpClient.PostAsync($"{_apiBaseUrl}/QuestionWorkshop/CreateQuestion", content);
 		return response;
+	}
+
+	public async Task<bool> UpdateSingleQuizSession(SoloQuizModel quizSession)
+	{
+		// Construct the payload for updating the quiz session
+		var updatePayload = new
+		{
+			id = quizSession.id,
+			score = quizSession.Score,
+			quizCompleted = quizSession.QuizCompleted,
+			quiz_Attempts = quizSession.QuizAttempts.Select(attempt => new
+			{
+				id = attempt.Id,
+				givenAnswerId = attempt.GivenAnswerId,
+				answerDate = attempt.AnswerDate.HasValue ? attempt.AnswerDate.Value.ToString("o") : null
+			}).ToList()
+		};
+
+		var json = JsonSerializer.Serialize(updatePayload, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+		var response = await _httpClient.PutAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", content);
+		return response.IsSuccessStatusCode;
 	}
 }

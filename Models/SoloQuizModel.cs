@@ -1,41 +1,46 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace Project_Quizz_Frontend.Models // Replace with your actual namespace
+namespace Project_Quizz_Frontend.Models
 {
-	public class QuizAnswerModel
+	public class QuizAttemptModel
 	{
-		public int AnswerId { get; set; }
-
-		public string AnswerText { get; set; }
-
-		public bool IsCorrect { get; set; }
+		public int Id { get; set; }
+		public int AskedQuestionId { get; set; }
+		public int? GivenAnswerId { get; set; }
+		public DateTime? AnswerDate { get; set; }
 	}
 
 	public class QuizQuestionModel
 	{
 		public int Id { get; set; }
-
 		[Required]
 		public string QuestionText { get; set; }
+		public List<QuizAnswerModel> Answers { get; set; }
+	}
 
-		public List<QuizAnswerModel> Answers { get; set; } = new List<QuizAnswerModel>();
+	public class QuizAnswerModel
+	{
+		public int id { get; set; }
+		public string AnswerText { get; set; }
+		public bool IsCorrectAnswer { get; set; }
 	}
 
 	public class SoloQuizModel
 	{
-		public int SessionId { get; set; }
+		public int id { get; set; }
 		public string UserId { get; set; }
 		public int Score { get; set; }
+		public DateTime CreateDate { get; set; }
 		public bool QuizCompleted { get; set; }
-		public List<QuizQuestionModel> Questions { get; set; } = new List<QuizQuestionModel>();
+		public int QuestionCount { get; set; }
+		public List<QuizAttemptModel> QuizAttempts { get; set; }
+		public List<QuizQuestionModel> question { get; set; }
 
-		// Helper properties
+		// Additional properties to support quiz flow
 		public int CurrentQuestionIndex { get; set; } = 0;
-
-		public QuizQuestionModel CurrentQuestion => Questions.Count > CurrentQuestionIndex
-			? Questions[CurrentQuestionIndex]
-			: null;
-
-		public bool HasNextQuestion => CurrentQuestionIndex + 1 < Questions.Count;
+		public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
+		public bool HasNextQuestion => CurrentQuestionIndex + 1 < question.Count;
 	}
 }
