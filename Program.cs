@@ -26,6 +26,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<QuizApiService>(); // This adds IHttpClientFactory to be used for creating HttpClient instances
 builder.Services.AddScoped<QuizApiService>(); // Register your QuizApiService
 
+builder.Services.AddDistributedMemoryCache();
 
 
 // Session support

@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+
 
 namespace Project_Quizz_Frontend.Controllers
 {
@@ -17,22 +19,38 @@ namespace Project_Quizz_Frontend.Controllers
 			_quizApiService = quizApiService;
 		}
 
-		public async Task<IActionResult> SoloQuiz(int singleQuizId = 1) // Example quizId for demonstration
+		public async Task<IActionResult> SoloQuiz(int singleQuizId = 1)
 		{
-			var userId = "PylzTest2"; // Example userId for demonstration
+			var userId = "PylzTest2"; // Adjust as necessary
 			var quizSession = await _quizApiService.GetSingleQuizSession(singleQuizId, userId);
 
 			if (quizSession != null)
 			{
+				// Serialize and store the quiz session in ASP.NET Core Session
+				var quizSessionJson = JsonSerializer.Serialize(quizSession);
+				HttpContext.Session.SetString("QuizSession", quizSessionJson);
+
 				return View("~/Views/Quiz/SoloQuiz.cshtml", quizSession);
 			}
-
 			return RedirectToAction("Error", "Home");
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> SubmitAnswer(SoloQuizModel quizSession, int selectedAnswerId, string action)
+		public async Task<IActionResult> SubmitAnswer(int selectedAnswerId, string action)
 		{
+			var quizSessionJson = HttpContext.Session.GetString("QuizSession");
+			if (string.IsNullOrEmpty(quizSessionJson))
+			{
+				return RedirectToAction("Error", "Home");
+			}
+
+			var quizSession = JsonSerializer.Deserialize<SoloQuizModel>(quizSessionJson);
+
+			// Now use quizSession as before
+			// After updating quizSession, don't forget to store it back to the session
+			quizSessionJson = JsonSerializer.Serialize(quizSession);
+			HttpContext.Session.SetString("QuizSession", quizSessionJson);
+
 			// Ensure quizSession is properly populated, possibly by fetching again or ensuring it's passed correctly
 			// This example assumes quizSession is correctly populated and includes the current state of the quiz
 
