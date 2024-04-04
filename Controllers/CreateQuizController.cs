@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace Project_Quizz_Frontend.Controllers
 {
     [Authorize]
-    public class QuizController : Controller
+    public class CreateQuizController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public QuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
+		public CreateQuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
 			_userManager = userManager;
@@ -22,13 +22,13 @@ namespace Project_Quizz_Frontend.Controllers
 		[HttpGet]
 		public async Task<IActionResult> CreateQuiz()
 		{
-			var model = new CreateQuizQuestionDto
+			var model = new CreateQuizQuestionDto();
 			var categories = await _quizApiService.GetAllCategoriesAsync();
 
 			// Pass categories to the view through ViewBag or ViewData
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
 
-			var model = new QuizQuestionViewModel
+			model = new CreateQuizQuestionDto
 			{
 				Answers = new List<AnswerViewModel>
 				{
