@@ -11,9 +11,11 @@
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            request.Headers.Add("ApiKey", _apiKey);
+            request.Headers.Add("apiKey", _apiKey);
 
-            return await base.SendAsync(request, cancellationToken);
+			Console.WriteLine($"Request Headers: {request.Headers}"); // Zum Debuggen
+
+			return await base.SendAsync(request, cancellationToken);
         }
     }
 }

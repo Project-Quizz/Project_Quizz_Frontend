@@ -17,9 +17,9 @@ namespace Project_Quizz_Frontend.Models
 		public List<QuizQuestionModel> question { get; set; }
 
 		// Additional properties to support quiz flow
-		public int CurrentQuestionIndex { get; set; } = 0;
-		public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
-		public bool HasNextQuestion => question != null && question.Count > 0 && CurrentQuestionIndex + 1 < question.Count;
+		//public int CurrentQuestionIndex { get; set; } = 0;
+		//public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
+		//public bool HasNextQuestion => question != null && question.Count > 0 && CurrentQuestionIndex + 1 < question.Count;
 	}
 	public class QuizAttemptModel
 	{
