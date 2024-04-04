@@ -101,4 +101,17 @@ public class QuizApiService
 	//	var response = await _httpClient.PutAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", content);
 	//	return response.IsSuccessStatusCode;
 	//}
+		var response = await _httpClient.PutAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", content);
+		return response.IsSuccessStatusCode;
+	}
+	public async Task<List<CategorieIdDto>> GetAllCategoriesAsync()
+	{
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/CategorieWorkshop/GetAllCategories");
+		if (response.IsSuccessStatusCode)
+		{
+			var categories = await response.Content.ReadFromJsonAsync<List<CategorieIdDto>>();
+			return categories;
+		}
+		return new List<CategorieIdDto>();
+	}
 }

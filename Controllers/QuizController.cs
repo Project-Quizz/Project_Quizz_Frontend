@@ -20,9 +20,15 @@ namespace Project_Quizz_Frontend.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult CreateQuiz()
+		public async Task<IActionResult> CreateQuiz()
 		{
 			var model = new CreateQuizQuestionDto
+			var categories = await _quizApiService.GetAllCategoriesAsync();
+
+			// Pass categories to the view through ViewBag or ViewData
+			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
+
+			var model = new QuizQuestionViewModel
 			{
 				Answers = new List<AnswerViewModel>
 				{
@@ -40,7 +46,6 @@ namespace Project_Quizz_Frontend.Controllers
 			}
 
 			return View(model);
-
 		}
 
 		[HttpPost]
