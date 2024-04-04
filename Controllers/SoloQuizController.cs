@@ -98,5 +98,17 @@ namespace Project_Quizz_Frontend.Controllers
 			ViewBag.Score = score;
 			return View();
 		}
+
+		public async Task<IActionResult> SoloQuizCategorySelection()
+		{
+			var categories = await _quizApiService.GetAllCategoriesAsync();
+			ViewBag.Categories = categories; // Use ViewBag to pass categories to the view
+			return View("SoloQuizSetup");
+		}
+
+		public IActionResult SoloQuizSetup()
+		{
+			return View();
+		}
 	}
 }
