@@ -30,5 +30,6 @@ namespace Project_Quizz_Frontend.Models
 	public class CategorieIdDto
 	{
 		public int CategorieId { get; set; }
+		public string Name { get; set; }
 	}
 }
