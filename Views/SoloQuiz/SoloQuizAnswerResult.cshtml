@@ -1,0 +1,55 @@
+﻿@model Project_Quizz_Frontend.Models.SoloQuizAnswerResultViewModel
+
+@{
+	ViewData["Title"] = "Solo Quiz";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Display feedback message if an answer has been submitted -->
+@if (Model.CorrectAnswer)
+{
+	<div class="alert alert-success">
+		Die Antwort ist richtig! 
+	</div>
+} else {
+	<div class="alert alert-danger">
+		Diese Antowrt ist leider Falsch!
+	</div>
+}
+
+<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
+	<div class="form-group">
+		<label>@Model.QuizQuestionDto.QuestionText</label>
+	</div>
+
+	<div class="row">
+		@foreach (var answer in Model.QuizQuestionDto.Answers)
+		{
+			if(answer.Id == Model.SelectedAnswerId)
+			{
+				<div class="col-md-6 form-group">
+					<div class="form-check">
+						<input class="form-check-input" type="radio" value="@answer.Id" checked disabled />
+						<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+					</div>
+				</div>
+			}
+			<div class="col-md-6 form-group">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" value="@answer.Id" disabled/>
+					<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+				</div>
+			</div>
+		}
+	</div>
+
+	@if(!Model.QuizComplete)
+	{
+		<button type="submit" class="btn btn-success" name="quizComplete" value="false">Next Question</button>
+	}
+	else
+	{
+		<button type="submit" class="btn btn-success" name="quizComplete" value="true">Quiz Beenden</button>
+	}
+</form>

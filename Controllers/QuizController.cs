@@ -22,7 +22,7 @@ namespace Project_Quizz_Frontend.Controllers
 		[HttpGet]
 		public IActionResult CreateQuiz()
 		{
-			var model = new QuizQuestionViewModel
+			var model = new CreateQuizQuestionDto
 			{
 				Answers = new List<AnswerViewModel>
 				{
@@ -44,7 +44,7 @@ namespace Project_Quizz_Frontend.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> CreateQuizOnDB(QuizQuestionViewModel model, int? correctAnswer)
+		public async Task<IActionResult> CreateQuizOnDB(CreateQuizQuestionDto model, int? correctAnswer)
 		{
 			// Set the correct answer based on the selected index
 			if (correctAnswer.HasValue)

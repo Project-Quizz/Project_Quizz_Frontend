@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Linq;
@@ -13,106 +15,84 @@ namespace Project_Quizz_Frontend.Controllers
 	public class SoloQuizController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
+		private readonly UserManager<IdentityUser> _userManager;
 
-		public SoloQuizController(QuizApiService quizApiService)
+		public SoloQuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
+			_userManager = userManager;
 		}
 
-		public async Task<IActionResult> SoloQuiz(int singleQuizId = 1)
+		public IActionResult SoloQuiz(GetQuizQuestionDto newQuizQuestion)
 		{
-			var userId = "PylzTest2"; // Adjust as necessary
-			var quizSession = await _quizApiService.GetSingleQuizSession(singleQuizId, userId);
+			return View(newQuizQuestion);
+		}
 
-			if (quizSession != null)
+		public IActionResult SoloQuizAnswerResult(SoloQuizAnswerResultViewModel viewModel)
+		{
+			return View(viewModel);
+		}
+
+		public async Task<IActionResult> CreateNewSingleQuizSession(int categorieId = 1)
+		{
+			var userId = _userManager.GetUserId(User);
+			var quizSession = await _quizApiService.CreateSingleQuizSession(userId, categorieId);
+
+			var newQuizSessionId = quizSession.CreatedQuizSessionId;
+
+			if (!quizSession.HttpResponse.IsSuccessStatusCode)
 			{
-				// Serialize and store the quiz session in ASP.NET Core Session
-				var quizSessionJson = JsonSerializer.Serialize(quizSession);
-				HttpContext.Session.SetString("QuizSession", quizSessionJson);
-
-				return View("~/Views/Quiz/SoloQuiz.cshtml", quizSession);
+				return RedirectToAction("Error", "Home");
 			}
-			return RedirectToAction("Error", "Home");
+
+			return RedirectToAction("GetQuestion", new { quizId = newQuizSessionId });
+		}
+
+		public async Task<IActionResult> GetQuestion(int quizId)
+		{
+			var userId = _userManager.GetUserId(User);
+
+			var quizQuestion = await _quizApiService.GetQuestionForSingleQuiz(quizId, userId);
+
+			HttpContext.Session.SetString("QuizQuestion", JsonConvert.SerializeObject(quizQuestion));
+
+			return View("SoloQuiz", quizQuestion);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> SubmitAnswer(int selectedAnswerId, string action)
+		public async Task<IActionResult> SubmitAnswer(int selectedAnswerId)
 		{
-			var quizSessionJson = HttpContext.Session.GetString("QuizSession");
-			if (string.IsNullOrEmpty(quizSessionJson))
+			var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
+			var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
+			var answer = quizQuestion.Answers.FirstOrDefault(x => x.Id == selectedAnswerId);
+
+            var viewModel = new SoloQuizAnswerResultViewModel
 			{
-				return RedirectToAction("Error", "Home");
+				QuizQuestionDto = quizQuestion,
+				SelectedAnswerId = selectedAnswerId
+			};
+
+			if(quizQuestion.QuestionCount == 1)
+			{
+				viewModel.QuizComplete = true;
+			} 
+			else
+			{
+				viewModel.QuizComplete = false;
 			}
 
-			var quizSession = JsonSerializer.Deserialize<SoloQuizModel>(quizSessionJson);
-
-			// Now use quizSession as before
-			// After updating quizSession, don't forget to store it back to the session
-			quizSessionJson = JsonSerializer.Serialize(quizSession);
-			HttpContext.Session.SetString("QuizSession", quizSessionJson);
-
-			// Ensure quizSession is properly populated, possibly by fetching again or ensuring it's passed correctly
-			// This example assumes quizSession is correctly populated and includes the current state of the quiz
-
-			if (quizSession == null)
+			if(answer.IsCorrectAnswer)
 			{
-				// Handle null quizSession appropriately
-				return RedirectToAction("Error", "Home");
-			}
-
-			var currentQuestion = quizSession.CurrentQuestion;
-
-			// Determine if the selected answer is correct
-			var isAnswerCorrect = currentQuestion.answers.Any(a => a.id == selectedAnswerId && a.isCorrectAnswer);
-
-			// Update attempt for the current question with selected answer and correctness
-			var currentAttempt = quizSession.quiz_Attempts.FirstOrDefault(a => a.askedQuestionId == currentQuestion.id);
-			if (currentAttempt != null)
-			{
-				currentAttempt.givenAnswerId = selectedAnswerId;
-				// Optionally update answerDate if your model and requirements include tracking the answer time
-				currentAttempt.answerDate = DateTime.UtcNow;
-			}
-
-			// Update the score if the answer is correct
-			if (isAnswerCorrect)
-			{
-				quizSession.score++;
-			}
-
-			// Prepare to move to the next question or end the quiz
-			if (action.Equals("next", StringComparison.OrdinalIgnoreCase) && quizSession.HasNextQuestion)
-			{
-				// Increment to the next question
-				quizSession.CurrentQuestionIndex++;
-			}
-			else if (!quizSession.HasNextQuestion)
-			{
-				// Mark the quiz as completed if there are no more questions
-				quizSession.quizCompleted = true;
-			}
-
-			// Call API to update the quiz session state
-			var updateSuccessful = await _quizApiService.UpdateSingleQuizSession(quizSession);
-			if (!updateSuccessful)
-			{
-				// Log error or handle unsuccessful update accordingly
-				TempData["Error"] = "There was a problem updating your quiz session. Please try again.";
-				// Consider what action to take if the update fails (e.g., retry, show error message, etc.)
-			}
-
-			// Determine redirect action after handling answer submission
-			if (quizSession.quizCompleted)
-			{
-				// Redirect to a completion page if the quiz is complete
-				return RedirectToAction("QuizComplete", new { score = quizSession.score });
+				viewModel.CorrectAnswer = true;
 			}
 			else
 			{
-				// Otherwise, render the quiz view again with the next question or the same question if the answer was incorrect
-				return View("~/Views/Quiz/SoloQuiz.cshtml", quizSession);
+				viewModel.CorrectAnswer= false;
 			}
+
+			return View("SoloQuizAnswerResult", viewModel);
 		}
+
 		public IActionResult QuizComplete(int score)
 		{
 			ViewBag.Score = score;

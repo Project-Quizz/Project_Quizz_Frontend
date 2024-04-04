@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Project_Quizz_Frontend.Models
 {
 	// Class for quiz questions
-	public class QuizQuestionViewModel
+	public class CreateQuizQuestionDto
 	{
 		public string QuestionText { get; set; }
 		public string UserId { get; set; }
