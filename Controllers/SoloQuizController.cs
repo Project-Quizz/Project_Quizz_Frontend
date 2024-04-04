@@ -81,7 +81,7 @@ namespace Project_Quizz_Frontend.Controllers
 				viewModel.QuizComplete = false;
 			}
 
-			if(answer.IsCorrectAnswer)
+			if(answer != null &&  answer.IsCorrectAnswer) // unbedingt anpassen
 			{
 				viewModel.CorrectAnswer = true;
 			}
