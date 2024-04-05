@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -46,30 +47,30 @@ public class QuizApiService
 		return response;
 	}
 
-	//public async Task<SoloQuizModel> GetSingleQuizSession(int singleQuizId, string userId)
-	//{
-	//	var response = await _httpClient.GetFromJsonAsync<SoloQuizModel>($"{_apiBaseUrl}/SingleQuizWorkshop/GetSingleQuizSession?id={singleQuizId}&userId={userId}");
-	//	return response;
-	//}
+	public async Task<HttpResponseMessage> UpdateSingleQuizSession(UpdateSingleQuizSessionDto updateSessionObj)
+	{
+		var url = $"{_apiTestUrl}/SingleQuizWorkshop/UpdateSingleQuizSession";
 
-	//public async Task<bool> SubmitAnswerAsync(QuizAnswerModel answer)
-	//{
-	//	var response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", answer);
-	//	return response.IsSuccessStatusCode;
-	//}
+		var json = JsonConvert.SerializeObject(updateSessionObj);
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-	//public async Task<SoloQuizModel> CreateSingleQuizSession(int singleQuizId)
-	//{
-	//	var response = await _httpClient.PostAsJsonAsync($"{_apiTestUrl}/SingleQuizWorkshop/CreateSingleQuizSession", new { singleQuizId });
-	//	if (response.IsSuccessStatusCode)
-	//	{
-	//		var quizSession = await response.Content.ReadFromJsonAsync<SoloQuizModel>();
-	//		return quizSession;
-	//	}
-	//	return null;
-	//}
+		var response = await _httpClient.PutAsync(url, content);
 
-	// This method is used for creating a new quiz question
+		return response;
+	}
+
+	public async Task<(GetResultFromSingleQuizDto Result, HttpStatusCode StatusCode)> GetResultFromSingleQuiz(int quizId, string userId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiTestUrl}/SingleQuizWorkshop/GetResultFromSingleQuiz?quizId={quizId}&userId={userId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<GetResultFromSingleQuizDto>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
+
 	public async Task<HttpResponseMessage> CreateQuestionAsync(Models.CreateQuizQuestionDto questionViewModel)
 	{
 		var json = System.Text.Json.JsonSerializer.Serialize(questionViewModel);
@@ -78,31 +79,6 @@ public class QuizApiService
 		return response;
 	}
 
-	//public async Task<bool> UpdateSingleQuizSession(SoloQuizModel quizSession)
-	//{
-	//	// Construct the payload for updating the quiz session
-	//	var updatePayload = new
-	//	{
-	//		id = quizSession.id,
-	//		score = quizSession.score,
-	//		quizCompleted = quizSession.quizCompleted,
-	//		quiz_Attempts = quizSession.quiz_Attempts.Select(attempt => new
-	//		{
-	//			id = attempt.id,
-	//			givenAnswerId = attempt.givenAnswerId,
-	//			answerDate = attempt.answerDate.HasValue ? attempt.answerDate.Value.ToString("o") : null
-	//		}).ToList()
-	//	};
-
-	//	var json = JsonSerializer.Serialize(updatePayload, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-	//	var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-	//	var response = await _httpClient.PutAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", content);
-	//	return response.IsSuccessStatusCode;
-	//}
-	//	var response = await _httpClient.PutAsync($"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession", content);
-	//	return response.IsSuccessStatusCode;
-	//}
 	public async Task<List<CategorieIdDto>> GetAllCategoriesAsync()
 	{
 		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/CategorieWorkshop/GetAllCategories");

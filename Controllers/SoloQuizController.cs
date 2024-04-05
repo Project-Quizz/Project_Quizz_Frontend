@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Linq;
+using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -28,12 +29,22 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(newQuizQuestion);
 		}
 
-		public IActionResult SoloQuizAnswerResult(SoloQuizAnswerResultViewModel viewModel)
+		public IActionResult SoloQuizAnswerResult(SoloQuizAnswerResultViewModel answerResult)
 		{
-			return View(viewModel);
+			return View(answerResult);
 		}
 
-		public async Task<IActionResult> CreateNewSingleQuizSession(int categorieId = 1)
+		public IActionResult SoloQuizCompleteResult(GetResultFromSingleQuizDto result)
+		{
+			return View(result);
+		}
+
+		public IActionResult SoloQuizSetup()
+		{
+			return View();
+		}
+
+		public async Task<IActionResult> CreateNewSingleQuizSession(int categorieId)
 		{
 			var userId = _userManager.GetUserId(User);
 			var quizSession = await _quizApiService.CreateSingleQuizSession(userId, categorieId);
@@ -45,7 +56,7 @@ namespace Project_Quizz_Frontend.Controllers
 				return RedirectToAction("Error", "Home");
 			}
 
-			return RedirectToAction("GetQuestion", new { quizId = newQuizSessionId });
+			return RedirectToAction("GetQuestion", new { quizId = newQuizSessionId});
 		}
 
 		public async Task<IActionResult> GetQuestion(int quizId)
@@ -53,6 +64,11 @@ namespace Project_Quizz_Frontend.Controllers
 			var userId = _userManager.GetUserId(User);
 
 			var quizQuestion = await _quizApiService.GetQuestionForSingleQuiz(quizId, userId);
+
+			if (HttpContext.Session.GetString("QuizQuestion") != null)
+			{
+				HttpContext.Session.Remove("QuizQuestion");
+			}
 
 			HttpContext.Session.SetString("QuizQuestion", JsonConvert.SerializeObject(quizQuestion));
 
@@ -62,53 +78,88 @@ namespace Project_Quizz_Frontend.Controllers
 		[HttpPost]
 		public async Task<IActionResult> SubmitAnswer(int selectedAnswerId)
 		{
+			var userId = _userManager.GetUserId(User);
 			var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
 			var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
 			var answer = quizQuestion.Answers.FirstOrDefault(x => x.Id == selectedAnswerId);
 
-            var viewModel = new SoloQuizAnswerResultViewModel
+			var updateSinbgleQuizSessionObj = new UpdateSingleQuizSessionDto
 			{
-				QuizQuestionDto = quizQuestion,
-				SelectedAnswerId = selectedAnswerId
+				QuizId = quizQuestion.QuizId,
+				QuestionId = quizQuestion.QuestionId,
+				AnswerFromUserId = selectedAnswerId,
+				UserId = userId,
 			};
 
-			if(quizQuestion.QuestionCount == 1)
+			var response = await _quizApiService.UpdateSingleQuizSession(updateSinbgleQuizSessionObj);
+
+			if(response.StatusCode == HttpStatusCode.BadRequest)
 			{
-				viewModel.QuizComplete = true;
-			} 
-			else
-			{
-				viewModel.QuizComplete = false;
+				TempData["ErrorMessageBadRequest"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
+				return View("SoloQuiz", quizQuestion);
 			}
 
-			if(answer != null &&  answer.IsCorrectAnswer) // unbedingt anpassen
+			if(response.StatusCode == HttpStatusCode.Unauthorized)
+			{
+				TempData["ErrorMessageUnauthorized"] = "Eine bereits beantwortete Frage kann nicht nocheinmal Beantwortet werden. Um fortzufahren klicken Sie bitte auf \"Nächste Frage\"";
+				return View("SoloQuiz", quizQuestion);
+			}
+
+			var viewModel = new SoloQuizAnswerResultViewModel
+			{
+				QuizId = quizQuestion.QuizId,
+				QuizQuestionDto = quizQuestion,
+				SelectedAnswerId = selectedAnswerId,
+				QuestionCount = quizQuestion.QuestionCount - 1
+			};
+
+			if (answer != null && answer.IsCorrectAnswer)
 			{
 				viewModel.CorrectAnswer = true;
 			}
 			else
 			{
-				viewModel.CorrectAnswer= false;
+				viewModel.CorrectAnswer = false;
 			}
 
-			return View("SoloQuizAnswerResult", viewModel);
+			if (response.StatusCode == HttpStatusCode.Accepted)
+			{
+				viewModel.QuizComplete = true;
+				return View("SoloQuizAnswerResult", viewModel);
+			}
+
+			if(response.StatusCode == HttpStatusCode.OK)
+			{
+				viewModel.QuizComplete = false;
+				return View("SoloQuizAnswerResult", viewModel);
+			}
+
+			TempData["ErrorMessage"] = "Es ist ein Fehler aufgetreten, bitte versuche es nochmal.";
+			return View("SoloQuiz", quizQuestion);
+
 		}
 
-		public IActionResult QuizComplete(int score)
+		public async Task<IActionResult> QuizComplete(int quizId)
 		{
-			ViewBag.Score = score;
-			return View();
+			var userId = _userManager.GetUserId(User);
+			var (quizResult, statusCode) = await _quizApiService.GetResultFromSingleQuiz(quizId, userId);
+
+			if(statusCode == HttpStatusCode.OK)
+			{
+				return View("SoloQuizCompleteResult", quizResult);
+			}
+
+			HttpContext.Session.Remove("QuizQuestion");
+
+			TempData["ErrorMessage"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
+			return View("SoloQuizCompleteResult", quizResult);
 		}
 
 		public async Task<IActionResult> SoloQuizCategorySelection()
 		{
 			var categories = await _quizApiService.GetAllCategoriesAsync();
-			ViewBag.Categories = categories; // Use ViewBag to pass categories to the view
+			ViewBag.Categories = categories;
 			return View("SoloQuizSetup");
-		}
-
-		public IActionResult SoloQuizSetup()
-		{
-			return View();
 		}
 	}
 }

@@ -7,7 +7,7 @@
 <form asp-controller="SoloQuiz" asp-action="CreateNewSingleQuizSession">
 	<div class="form-group">
 		<label for="categorieId">Select Category:</label>
-		<select class="form-control" id="categorieId">
+		<select class="form-control" id="categorieId" name="categorieId">
 			<option value="">Please select a category</option>
 			@foreach (var category in ViewBag.Categories)
 			{

@@ -4,37 +4,76 @@
 	ViewData["Title"] = "Solo Quiz";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<!-- Display feedback message if an answer has been submitted -->
-@if (TempData["FeedbackMessage"] != null)
+@if (TempData["ErrorMessageBadRequest"] != null)
 {
-	<div class="alert @(TempData["IsCorrect"].ToString() == "True" ? "alert-success" : "alert-danger")">
-		@TempData["FeedbackMessage"]
+	<div class="alert alert-danger">
+		@TempData["ErrorMessageBadRequest"]
+	</div>
+} 
+@if (TempData["ErrorMessageUnauthorized"] != null)
+{
+	<div class="alert alert-danger">
+		@TempData["ErrorMessageUnauthorized"]
 	</div>
 }
 
-	<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
-		<div class="form-group">
-			<label asp-for="@Model.QuestionText">@Model.QuestionText</label>
-		</div>
+@{
+	int totalQuestions = 5;
+	int? remainingQuestions = Model.QuestionCount;
+	int? completedQuestions = totalQuestions - remainingQuestions + 1;
+	double progressPercentage = (double)completedQuestions / totalQuestions * 100;
+}
 
-		<div class="row">
-			@foreach (var answer in Model.Answers)
-			{
-				<div class="col-md-6 form-group">
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id"/>
-						<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
-					</div>
+<div class="card text-center">
+	<div class="card-header">
+		<h2>Frage @completedQuestions</h2>
+	</div>
+	<div class="card-body">
+		<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
+			<label asp-for="@Model.QuestionText"><h5>@Model.QuestionText</h5></label>
+
+			<div class="d-flex justify-content-center mt-4 mb-4">
+				<div class="row">
+					@if (TempData["ErrorMessageUnauthorized"] != null)
+					{
+						@foreach (var answer in Model.Answers)
+						{
+							<div class="col-md-6 form-group">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled/>
+									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+								</div>
+							</div>
+						}
+					} 
+					else
+					{
+						@foreach (var answer in Model.Answers)
+						{
+							<div class="col-md-6 form-group">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" />
+									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+								</div>
+							</div>
+						}
+					}
 				</div>
-			}
-		</div>
-
-		<button type="submit" class="btn btn-primary">Submit Answer</button>
-
-		<!-- Only show the next question button if there is a next question -->
-		<button type="submit" class="btn btn-success" name="action" value="next">Next Question</button>
-	</form>
-
-<a href="@Url.Action("Index", "Home")" class="btn btn-secondary">Go Home</a>
+			</div>
+			<div>
+				@if (TempData["ErrorMessageUnauthorized"] != null)
+				{
+					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SoloQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+				}
+				else
+				{
+					<button type="submit" class="btn btn-primary">Antwort senden</button>
+				}
+				<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
+			</div>
+		</form>
+	</div>
+	<div class="progress">
+		<div class="progress-bar rounded-bottom" role="progressbar" style="width: @progressPercentage%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+	</div>
+</div>
