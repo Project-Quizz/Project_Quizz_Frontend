@@ -20,14 +20,6 @@
 
 <form asp-controller="CreateQuestion" asp-action="CreateQuestionOnDB" method="post">
 	
-	<!--The "asp-for" does NOT work combined with TempData. -->
-	@*
-		<div class="form-group">
-		<label for="questionText">Question:</label>
-		<input type="text" class="form-control" id="questionText" asp-for="questionText" required />
-		</div>
-	*@
-	
 	<div class="form-group">
 		<label for="CategorieId">Category:</label>
 		<select class="form-control" id="CategorieId" name="Categorie.CategorieId" required>

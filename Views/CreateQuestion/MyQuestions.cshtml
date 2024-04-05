@@ -15,28 +15,13 @@
     <div class="card-header text-center">
         <h2>Meine Fragen</h2>
     </div>
-    <div class="d-flex justify-content-end mb-4">
-        <div data-mdb-input-init class="form-outline">
-            <input data-mdb-search
-                   data-mdb-target="#table_modal"
-                   type="text"
-                   id="search_modal"
-                   class="form-control" />
-            <label class="form-label" for="search_modal">Search</label>
-        </div>
-        <button data-mdb-ripple-init class="btn btn-primary btn-sm ms-3" data-mdb-add-entry data-mdb-target="#table_modal">
-            <i class="fa fa-plus"></i>
-        </button>
-    </div>
-    <div id="question_table" class="table-editor"
-         data-mdb-table-editor-init
-         data-mdb-entries="5"
-         data-mdb-entries-options="[5, 10, 15]">
-        <table class="table">
+    <div>
+        <table id="questionOverview" class="display hover" style="width:100%">
             <thead>
                 <tr>
-                    <th class="th-sm" data-mdb-width="350">Frage</th>
-                    <th class="th-sm" data-mdb-width="350">Kategorie</th>
+                    <th>Frage</th>
+                    <th>Kategorie</th>
+                    <th>Aktionen</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,10 +30,23 @@
                         <tr>
                             <td>@question.QuestionText</td>
                             <td>@question.Categorie.Name</td>
+                        <td><a class="btn btnGreen" asp-route-questionId="@question.QuestionId" asp-controller="CreateQuestion" asp-action="EditQuestion"><i class="fas fa-pencil"></i></a></td>
                         </tr>
                     }
             </tbody>
         </table>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        new DataTable('#questionOverview', {
+            pagingType: 'full_numbers',
+            scrollX: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/de-DE.json'
+            }
+        });
+    </script>
+}
 

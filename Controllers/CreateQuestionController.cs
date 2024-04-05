@@ -64,6 +64,38 @@ namespace Project_Quizz_Frontend.Controllers
             return View(questions);
 		}
 
+		public async Task<IActionResult> EditQuestion(int questionId)
+		{
+			GetQuestionForEditingDto question = await GetSelectedQuestion(questionId);
+			if (question == null)
+			{
+                return View("MyQuestions");
+            }
+
+            var userId = _userManager.GetUserId(User);
+			if(question.UserId != userId)
+			{
+				return View("MyQuestions");
+			}
+
+			var categories = await _quizApiService.GetAllCategoriesAsync();
+			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
+
+			return View(question);
+		}
+
+		public async Task<GetQuestionForEditingDto> GetSelectedQuestion(int questionId)
+		{
+			var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
+
+            if (statusCode != HttpStatusCode.OK)
+            {
+				return null;
+            }
+
+			return question;
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, int? correctAnswer)
 		{

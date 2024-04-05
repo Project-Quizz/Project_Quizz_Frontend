@@ -23,7 +23,7 @@ public class QuizApiService
 
 	public async Task<CreateQuizSessionResponse> CreateSingleQuizSession(string userId, int categorieId)
 	{
-		var response = await _httpClient.PostAsync($"{_apiTestUrl}/SingleQuizWorkshop/CreateSingleQuizSession?userId={userId}&categorieId={categorieId}", null);
+		var response = await _httpClient.PostAsync($"{_apiBaseUrl}/SingleQuizWorkshop/CreateSingleQuizSession?userId={userId}&categorieId={categorieId}", null);
 
 		var quizSessionResponse = new CreateQuizSessionResponse
 		{
@@ -43,13 +43,13 @@ public class QuizApiService
 
 	public async Task<GetQuizQuestionDto> GetQuestionForSingleQuiz(int quizId, string userId)
 	{
-		var response = await _httpClient.GetFromJsonAsync<GetQuizQuestionDto>($"{_apiTestUrl}/SingleQuizWorkshop/GetQuestionFromQuizSession?quizId={quizId}&userId={userId}");
+		var response = await _httpClient.GetFromJsonAsync<GetQuizQuestionDto>($"{_apiBaseUrl}/SingleQuizWorkshop/GetQuestionFromQuizSession?quizId={quizId}&userId={userId}");
 		return response;
 	}
 
 	public async Task<HttpResponseMessage> UpdateSingleQuizSession(UpdateSingleQuizSessionDto updateSessionObj)
 	{
-		var url = $"{_apiTestUrl}/SingleQuizWorkshop/UpdateSingleQuizSession";
+		var url = $"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession";
 
 		var json = JsonConvert.SerializeObject(updateSessionObj);
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -61,7 +61,7 @@ public class QuizApiService
 
 	public async Task<(GetResultFromSingleQuizDto Result, HttpStatusCode StatusCode)> GetResultFromSingleQuiz(int quizId, string userId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/SingleQuizWorkshop/GetResultFromSingleQuiz?quizId={quizId}&userId={userId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/SingleQuizWorkshop/GetResultFromSingleQuiz?quizId={quizId}&userId={userId}");
 
 		if(response.IsSuccessStatusCode)
 		{
@@ -97,6 +97,18 @@ public class QuizApiService
 		if(response.IsSuccessStatusCode)
 		{
 			var result = await response.Content.ReadFromJsonAsync<List<GetAllQuestionsFromUserDto>>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
+
+	public async Task<(GetQuestionForEditingDto Result, HttpStatusCode StatusCode)> GetQuestionForEditing(int questionId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetQuestion?id={questionId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<GetQuestionForEditingDto>();
 			return (result, response.StatusCode);
 		}
 		return (null, response.StatusCode);
