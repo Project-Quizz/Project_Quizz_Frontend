@@ -23,7 +23,7 @@ public class QuizApiService
 
 	public async Task<CreateQuizSessionResponse> CreateSingleQuizSession(string userId, int categorieId)
 	{
-		var response = await _httpClient.PostAsync($"{_apiTestUrl}/SingleQuizWorkshop/CreateSingleQuizSession?userId={userId}&categorieId={categorieId}", null);
+		var response = await _httpClient.PostAsync($"{_apiBaseUrl}/SingleQuizWorkshop/CreateSingleQuizSession?userId={userId}&categorieId={categorieId}", null);
 
 		var quizSessionResponse = new CreateQuizSessionResponse
 		{
@@ -43,7 +43,7 @@ public class QuizApiService
 
 	public async Task<GetQuizQuestionDto> GetQuestionForSingleQuiz(int quizId, string userId)
 	{
-		var response = await _httpClient.GetFromJsonAsync<GetQuizQuestionDto>($"{_apiTestUrl}/SingleQuizWorkshop/GetQuestionFromQuizSession?quizId={quizId}&userId={userId}");
+		var response = await _httpClient.GetFromJsonAsync<GetQuizQuestionDto>($"{_apiBaseUrl}/SingleQuizWorkshop/GetQuestionFromQuizSession?quizId={quizId}&userId={userId}");
 		return response;
 	}
 
@@ -61,7 +61,7 @@ public class QuizApiService
 
 	public async Task<(GetResultFromSingleQuizDto Result, HttpStatusCode StatusCode)> GetResultFromSingleQuiz(int quizId, string userId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/SingleQuizWorkshop/GetResultFromSingleQuiz?quizId={quizId}&userId={userId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/SingleQuizWorkshop/GetResultFromSingleQuiz?quizId={quizId}&userId={userId}");
 
 		if(response.IsSuccessStatusCode)
 		{
