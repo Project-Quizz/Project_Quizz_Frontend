@@ -4,23 +4,24 @@ using Project_Quizz_Frontend.Services;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace Project_Quizz_Frontend.Controllers
 {
     [Authorize]
-    public class CreateQuizController : Controller
+    public class CreateQuestionController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public CreateQuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
+		public CreateQuestionController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
 			_userManager = userManager;
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> CreateQuiz()
+		public async Task<IActionResult> CreateQuestion()
 		{
 			var model = new CreateQuizQuestionDto();
 			var categories = await _quizApiService.GetAllCategoriesAsync();
@@ -48,8 +49,23 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(model);
 		}
 
+		public async Task<IActionResult> MyQuestions()
+		{
+            var userId = _userManager.GetUserId(User);
+
+			var (questions, statusCode) = await _quizApiService.GetAllQuestionsFromUser(userId);
+
+			if(statusCode != HttpStatusCode.OK)
+			{
+				TempData["ErrorMessage"] = "Es konnten keine Fragen geladen werden. Bitte versuche es später nochmal.";
+				return View();
+			}
+
+            return View(questions);
+		}
+
 		[HttpPost]
-		public async Task<IActionResult> CreateQuizOnDB(CreateQuizQuestionDto model, int? correctAnswer)
+		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, int? correctAnswer)
 		{
 			// Set the correct answer based on the selected index
 			if (correctAnswer.HasValue)
@@ -70,14 +86,14 @@ namespace Project_Quizz_Frontend.Controllers
 			if (response.IsSuccessStatusCode)
 			{
 				// Display a success message
-				TempData["SuccessMessage"] = "Your question has been successfully submitted!";
-				return RedirectToAction("CreateQuiz");
+				TempData["SuccessMessage"] = "Die Frage wurde erfoglreich erstellt!";
+				return RedirectToAction("CreateQuestion");
 			}
 			else
 			{
 				// Display an error message
-				TempData["ErrorMessage"] = "There was an error submitting your question. Please try again!";
-				return RedirectToAction("CreateQuiz");
+				TempData["ErrorMessage"] = "Leider gab es ein Problem beim erstellen deiner Frage!";
+				return RedirectToAction("CreateQuestion");
 			}
 		}
 	}

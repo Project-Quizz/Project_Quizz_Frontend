@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Mitwirken";
+}
+
+<div class="card text-center">
+    <div class="card-header">
+        <h2>Mitwirken Menü</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <a type="button" asp-controller="CreateQuestion" asp-action="CreateQuestion" class="btn btn-primary" data-mdb-ripple-init>Frage erstellen</a>
+        </div>
+        <div class="mb-4">
+            <a type="button" asp-controller="CreateQuestion" asp-action="MyQuestions" class="btn btn-primary" data-mdb-ripple-init>Meine Fragen</a>
+        </div>
+    </div>
+</div>

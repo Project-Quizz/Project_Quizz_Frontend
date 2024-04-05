@@ -89,4 +89,16 @@ public class QuizApiService
 		}
 		return new List<CategorieIdDto>();
 	}
+
+	public async Task<(List<GetAllQuestionsFromUserDto> Result, HttpStatusCode StatusCode)> GetAllQuestionsFromUser(string userId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<List<GetAllQuestionsFromUserDto>>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
 }
