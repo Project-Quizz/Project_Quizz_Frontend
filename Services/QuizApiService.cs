@@ -49,7 +49,7 @@ public class QuizApiService
 
 	public async Task<HttpResponseMessage> UpdateSingleQuizSession(UpdateSingleQuizSessionDto updateSessionObj)
 	{
-		var url = $"{_apiTestUrl}/SingleQuizWorkshop/UpdateSingleQuizSession";
+		var url = $"{_apiBaseUrl}/SingleQuizWorkshop/UpdateSingleQuizSession";
 
 		var json = JsonConvert.SerializeObject(updateSessionObj);
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
