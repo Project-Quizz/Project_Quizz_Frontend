@@ -32,4 +32,11 @@ namespace Project_Quizz_Frontend.Models
 		public int CategorieId { get; set; }
 		public string Name { get; set; }
 	}
+
+	public class GetAllQuestionsFromUserDto
+	{
+		public int QuestionId { get; set; }
+		public string QuestionText { get; set; }
+		public CategorieIdDto Categorie { get; set; }
+	}
 }

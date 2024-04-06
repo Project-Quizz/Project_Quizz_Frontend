@@ -1,0 +1,69 @@
+﻿@model GetQuestionForEditingDto
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card ">
+    <form asp-controller="CreateQuestion" asp-action="UpdateModifiedQuestion">
+        <div class="card-header">
+            <div class="text-center mb-4">
+                <h4>Frage anpassen</h4>
+            </div>
+            <div class="form-outline" data-mdb-input-init>
+                <input type="text" id="question" class="form-control form-control-lg" asp-for="@Model.QuestionText"/>
+                <label class="form-label" for="question">Frage</label>
+            </div>
+        </div>
+        <div class="card-body">
+            @for (int i = 0; i < Model.Answers.Count; i++)
+            {
+                <input hidden asp-for="@Model.Answers[i].Id" />
+                <div class="form-outline mb-2" data-mdb-input-init>
+                    <input type="text" id="@("answer" + i)" class="form-control form-control-lg" asp-for="@Model.Answers[i].AnswerText" />
+                    <label class="form-label" for="@("answer" + i)">@("Antwort" + " " + (i+1))</label>
+                </div>
+
+                if (Model.Answers[i].IsCorrectAnswer)
+                {
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" checked/>
+                        <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
+                    </div>
+                } else
+                {
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" />
+                        <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
+                    </div>
+                }
+            }
+        </div>
+        <div class="card-footer">
+            <div class="mb-4">
+                <select id="categorieSelect" data-mdb-select-init data-selected-categorie="@Model.Categorie.CategorieId" asp-for="@Model.Categorie.CategorieId">
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.CategorieId">@category.Name</option>
+                    }
+                </select>
+                <label class="form-label select-label">Kategorie</label>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        const singleSelect = document.querySelector('#categorieSelect');
+        const selectedCategorie = singleSelect.dataset.selectedCategorie;
+        const singleSelectInstance = mdb.Select.getInstance(singleSelect);
+        singleSelectInstance.setValue(selectedCategorie);
+    </script>
+}

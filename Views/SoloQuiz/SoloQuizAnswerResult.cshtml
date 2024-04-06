@@ -3,24 +3,11 @@
 @{
 	ViewData["Title"] = "Solo Quiz";
 }
-	<!-- Display feedback message if an answer has been submitted -->
-@* 	@if (Model.CorrectAnswer)
-	{
-		<div class="alert alert-success">
-			Die Antwort ist richtig!
-		</div>
-	}
-	else
-	{
-		<div class="alert alert-danger">
-			Diese Antowrt ist leider Falsch!
-		</div>
-	} *@
 
 @{
 	int totalQuestions = 5;
 	int? remainingQuestions = Model.QuestionCount;
-	int? completedQuestions = totalQuestions - remainingQuestions + 1;
+	int? completedQuestions = totalQuestions - remainingQuestions;
 	double progressPercentage = (double)completedQuestions / totalQuestions * 100;
 }
 
@@ -72,8 +59,8 @@
 				@if (!Model.QuizComplete)
 				{
 					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SoloQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+					<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
 				}
-				<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
 			</div>
 		</form>
 		@if (Model.QuizComplete)

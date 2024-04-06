@@ -93,7 +93,7 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "Das {0} muss mindestens {2} und maximal {1} Zeichen lang sein.", MinimumLength = 12)]
+            [StringLength(100, ErrorMessage = "Das {0} muss mindestens {2} und maximal {1} Zeichen lang sein.", MinimumLength = 10)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }

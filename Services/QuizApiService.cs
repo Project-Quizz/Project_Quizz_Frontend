@@ -89,4 +89,36 @@ public class QuizApiService
 		}
 		return new List<CategorieIdDto>();
 	}
+
+	public async Task<(List<GetAllQuestionsFromUserDto> Result, HttpStatusCode StatusCode)> GetAllQuestionsFromUser(string userId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<List<GetAllQuestionsFromUserDto>>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
+
+	public async Task<(GetQuestionForEditingDto Result, HttpStatusCode StatusCode)> GetQuestionForEditing(int questionId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetQuestion?id={questionId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<GetQuestionForEditingDto>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
+
+	public async Task<HttpResponseMessage> UpdateQuestion(GetQuestionForEditingDto modifiedQuestion)
+	{
+		var json = System.Text.Json.JsonSerializer.Serialize(modifiedQuestion);
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
+		var response = await _httpClient.PutAsync($"{_apiBaseUrl}/QuestionWorkshop/UpdateQuestion", content);
+		return response;
+	}
 }
