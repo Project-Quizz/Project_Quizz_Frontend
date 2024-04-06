@@ -58,7 +58,7 @@ namespace Project_Quizz_Frontend.Controllers
 			if(statusCode != HttpStatusCode.OK)
 			{
 				TempData["ErrorMessage"] = "Es konnten keine Fragen geladen werden. Bitte versuche es später nochmal.";
-				return View();
+				return View(new List<GetAllQuestionsFromUserDto>());
 			}
 
             return View(questions);
@@ -69,22 +69,25 @@ namespace Project_Quizz_Frontend.Controllers
 			GetQuestionForEditingDto question = await GetSelectedQuestion(questionId);
 			if (question == null)
 			{
-                return View("MyQuestions");
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("MyQuestions");
             }
 
             var userId = _userManager.GetUserId(User);
 			if(question.UserId != userId)
 			{
-				return View("MyQuestions");
+				return RedirectToAction("MyQuestions");
 			}
 
-			var categories = await _quizApiService.GetAllCategoriesAsync();
+			HttpContext.Session.SetInt32("QuestionId", questionId);
+
+            var categories = await _quizApiService.GetAllCategoriesAsync();
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
 
 			return View(question);
 		}
 
-		public async Task<GetQuestionForEditingDto> GetSelectedQuestion(int questionId)
+		private async Task<GetQuestionForEditingDto> GetSelectedQuestion(int questionId)
 		{
 			var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
 
@@ -96,7 +99,53 @@ namespace Project_Quizz_Frontend.Controllers
 			return question;
 		}
 
-		[HttpPost]
+		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
+		{
+            int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
+            if (questionIdNullable.HasValue)
+            {
+                modifiedQuestion.Id = questionIdNullable.Value;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("MyQuestions");
+            }
+
+            var categories = await _quizApiService.GetAllCategoriesAsync();
+			if(!categories.Any(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId))
+			{
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+			}
+
+            if (isCorrectAnswerRadio < 0 || isCorrectAnswerRadio >= modifiedQuestion.Answers.Count)
+            {
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+            }
+
+			modifiedQuestion.Answers[isCorrectAnswerRadio].IsCorrectAnswer = true;
+
+			modifiedQuestion.Categorie.Name = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
+
+            var userId = _userManager.GetUserId(User);
+			modifiedQuestion.UserId = userId;
+
+            var response = await _quizApiService.UpdateQuestion(modifiedQuestion);
+
+			if (response.StatusCode != HttpStatusCode.OK)
+			{
+				HttpContext.Session.Remove("QuestionId");
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+			}
+
+            TempData["UpdateComplete"] = "Vorgang erfolgreich abgeschlossen";
+            return RedirectToAction("MyQuestions");
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, int? correctAnswer)
 		{
 			// Set the correct answer based on the selected index
