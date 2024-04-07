@@ -101,6 +101,8 @@ namespace Project_Quizz_Frontend.Controllers
 
 		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
 		{
+            string categorieName;
+
             int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
             if (questionIdNullable.HasValue)
             {
@@ -127,16 +129,16 @@ namespace Project_Quizz_Frontend.Controllers
 
 			modifiedQuestion.Answers[isCorrectAnswerRadio].IsCorrectAnswer = true;
 
-			var categorieName = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
-			if (categorieName != null)
+			if (categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name == null)
+            {
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+			} else
 			{
-				modifiedQuestion.Categorie.Name = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
-			} 
-			else
-			{
-				TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-				return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
-			}
+				categorieName = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
+            }
+
+			modifiedQuestion.Categorie.Name = categorieName;
 
             var userId = _userManager.GetUserId(User);
 			modifiedQuestion.UserId = userId;
