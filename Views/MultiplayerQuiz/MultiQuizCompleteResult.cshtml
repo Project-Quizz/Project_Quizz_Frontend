@@ -1,0 +1,71 @@
+﻿@model GetResultFromMultiQuizDto
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@{
+    int score = Model.Score;
+    int pointsPerCorrectAnswer = 5;
+    int correctAnswers = score / pointsPerCorrectAnswer;
+
+    int scoreOpponent = Model.Opponent.Score;
+    int correctAnswersOpponent = scoreOpponent / pointsPerCorrectAnswer;
+}
+
+<div class="card text-center mb-5">
+    <div class="card-header">
+        <h2 class="mb-5">Geschafft!</h2>
+        @if (Model.Score >= 20)
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #e1e100"></i>
+        }
+        else if (Model.Score >= 10 && Model.Score < 20)
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #6d7472"></i>
+        }
+        else
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #94634e"></i>
+        }
+    </div>
+    <div class="card-body">
+        <h5 class="card-title mb-5">Du hast @correctAnswers / 5 Fragen richtig beantwortet</h5>
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Quiz Beenden</a>
+    </div>
+</div>
+
+
+<div class="card text-center">
+    <div class="card-header">
+        <h2 class="mb-5">Dein Gegner!</h2>
+        @if (Model.Opponent.Score >= 20)
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #e1e100"></i>
+        }
+        else if (Model.Opponent.Score >= 10 && Model.Score < 20)
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #6d7472"></i>
+        }
+        else if (Model.Opponent.QuizComplete == false)
+        {
+            <i class="far fa-circle-pause fa-10x mb-5" style="color: #000000"></i>
+        }
+        else
+        {
+            <i class="fas fa-medal fa-10x mb-5" style="color: #94634e"></i>
+        }
+    </div>
+    <div class="card-body">
+        @if (Model.Opponent.QuizComplete == true)
+        {
+            <h5 class="card-title mb-5">Dein Gegner hat @correctAnswersOpponent / 5 Fragen richtig beantwortet</h5>
+        } else
+        {
+            <h5 class="card-title mb-5">Dein Gegner hat das Quiz noch nicht beenden.</h5>
+        }
+    </div>
+</div>

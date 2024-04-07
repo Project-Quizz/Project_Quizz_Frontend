@@ -1,0 +1,76 @@
+﻿@model Project_Quizz_Frontend.Models.MultiQuizAnswerResultViewModel
+
+@{
+	ViewData["Title"] = "Solo Quiz";
+}
+
+@{
+	int totalQuestions = 5;
+	int? remainingQuestions = Model.QuestionCount;
+	int? completedQuestions = totalQuestions - remainingQuestions;
+	double progressPercentage = (double)completedQuestions / totalQuestions * 100;
+}
+
+<div class="card text-center">
+	@if (Model.CorrectAnswer)
+	{
+		<div class="alert alert-success">
+			Die Antwort ist richtig!
+		</div>
+	}
+	else
+	{
+		<div class="alert alert-danger">
+			Diese Antowrt ist leider Falsch!
+		</div>
+	}
+	<div class="card-header">
+		<h2>Frage @completedQuestions</h2>
+	</div>
+	<div class="card-body">
+		<form method="post">
+			<label asp-for="@Model.QuizQuestionDto.QuestionText"><h5>@Model.QuizQuestionDto.QuestionText</h5></label>
+
+			<div class="d-flex justify-content-center mt-4 mb-4">
+				<div class="row">
+					@foreach (var answer in Model.QuizQuestionDto.Answers)
+					{
+						if (answer.Id == Model.SelectedAnswerId)
+						{
+							<div class="col-md-6 form-group">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled checked />
+									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+								</div>
+							</div>
+						}
+						else
+						{
+							<div class="col-md-6 form-group">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled />
+									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
+								</div>
+							</div>
+						}
+					}
+				</div>
+			</div>
+			<div>
+				@if (!Model.QuizComplete)
+				{
+					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "MultiplayerQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+					<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
+				}
+			</div>
+		</form>
+		@if (Model.QuizComplete)
+		{
+			<button class="btn btn-success" onclick="location.href='@Url.Action("QuizComplete", "MultiplayerQuiz", new { quizId = Model.QuizId})'">Quiz Abschließen</button>
+		}
+	</div>
+	<div class="progress">
+		<div class="progress-bar rounded-bottom" role="progressbar" style="width: @progressPercentage%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+	</div>
+</div>
+

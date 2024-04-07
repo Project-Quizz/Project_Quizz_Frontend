@@ -1,0 +1,17 @@
+﻿<div class="card  ">
+    <div class="card-header">Multiplayer Einstellungen</div>
+	<form asp-controller="MultiplayerQuiz" asp-action="CreateMultiplayerSession">
+		<div class="card-body">
+			<select class="form-control mb-4" id="categorieId" name="categorieId">
+				<option value="">Kategorie auswählen</option>
+				@foreach (var category in ViewBag.Categories)
+				{
+					<option value="@category.CategorieId">@category.Name</option>
+				}
+			</select>
+		</div>
+		<div class="card-footer">
+			<button type="submit" class="btn btn-primary">Bestätigen</button>
+		</div>
+	</form>
+</div>

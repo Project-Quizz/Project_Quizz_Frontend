@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Multiplayer";
+}
+
+<div class="card text-center">
+    <div class="card-header">
+        <h2>Mitwirken Menü</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary" data-mdb-ripple-init>Spieler herausfordern</a>
+        </div>
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="ChallengesOverview" class="btn btn-primary" data-mdb-ripple-init>Herausforderungen</a>
+        </div>
+    </div>
+</div>
