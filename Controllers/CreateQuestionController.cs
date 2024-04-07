@@ -101,8 +101,6 @@ namespace Project_Quizz_Frontend.Controllers
 
 		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
 		{
-            string categorieName;
-
             int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
             if (questionIdNullable.HasValue)
             {
@@ -129,16 +127,14 @@ namespace Project_Quizz_Frontend.Controllers
 
 			modifiedQuestion.Answers[isCorrectAnswerRadio].IsCorrectAnswer = true;
 
-			if (categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name == null)
+            var category = categories.Find(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId);
+            if (category == null)
             {
                 TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
                 return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
-			} else
-			{
-				categorieName = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
-            }
+			}
 
-			modifiedQuestion.Categorie.Name = categorieName;
+			modifiedQuestion.Categorie.Name = category.Name;
 
             var userId = _userManager.GetUserId(User);
 			modifiedQuestion.UserId = userId;
