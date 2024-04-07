@@ -127,16 +127,14 @@ namespace Project_Quizz_Frontend.Controllers
 
 			modifiedQuestion.Answers[isCorrectAnswerRadio].IsCorrectAnswer = true;
 
-			var categorieName = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
-			if (categorieName != null)
-			{
-				modifiedQuestion.Categorie.Name = categories.FirstOrDefault(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId).Name;
-			} 
-			else
-			{
-				TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-				return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+            var category = categories.Find(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId);
+            if (category == null)
+            {
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
 			}
+
+			modifiedQuestion.Categorie.Name = category.Name;
 
             var userId = _userManager.GetUserId(User);
 			modifiedQuestion.UserId = userId;
