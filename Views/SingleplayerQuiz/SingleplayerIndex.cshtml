@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Singleplayer";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger"
+         role="alert"
+         id="ErrorMessage"
+         data-mdb-position="top-right"
+         data-mdb-stacking="true"
+         data-mdb-width="300px"
+         data-mdb-append-to-body="true">
+        <p>@TempData["ErrorMessage"]<p>
+    </div>
+}
+
+<div class="card text-center">
+    <div class="card-header">
+        <h2>Mitwirken Menü</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <a type="button" asp-controller="SingleplayerQuiz" asp-action="SingleplayerSettings" class="btn btn-primary" data-mdb-ripple-init>Einzelspiel starten</a>
+        </div>
+        <div class="mb-4">
+            <a type="button" asp-controller="SingleplayerQuiz" asp-action="OverviewOfOpenSingleQuizzes" class="btn btn-primary position-relative">
+                Offene Einzelspiele
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger">
+                    @ViewBag.NotificationCount
+                    <span class="visually-hidden">offene Herausforderungen</span>
+                </span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                // Zugriff auf das div mit der ID 'EmailSuccessful'
+                var emailSuccessfulDiv = document.getElementById("ErrorMessage");
+                if (emailSuccessfulDiv) {
+                    emailSuccessfulDiv.style.display = "none";
+                }
+            }, 6000);
+        });
+    </script>
+}

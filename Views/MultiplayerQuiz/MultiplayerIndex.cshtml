@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Multiplayer";
 }
 
 @if (TempData["ErrorMessage"] != null)
@@ -15,20 +15,25 @@
     </div>
 }
 
-<div class="card text-center border border-primary shadow-0 ">
-    <div class="card-header"><h2>Startmenü</h2></div>
-
-    <div class="card-body">
-        <a type="button" asp-controller="MyArea" asp-action="MyAreaIndex" class="btn btn-primary" data-mdb-ripple-init>Mein Bereich</a>
-        <br />
-        <br />
-        <a type="button" asp-controller="SingleplayerQuiz" asp-action="SingleplayerIndex" class="btn btn-primary">Einzelspieler</a>
-        <br />
-        <br />
-        <a type="button" asp-controller="MultiplayerQuiz" asp-action="MultiplayerIndex" class="btn btn-primary">Multiplayer</a>
+<div class="card text-center">
+    <div class="card-header">
+        <h2>Mitwirken Menü</h2>
     </div>
-    <div class="card-footer">2 days ago</div>
+    <div class="card-body">
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary" data-mdb-ripple-init>Spieler herausfordern</a>
+        </div>
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="ChallengesOverview" class="btn btn-primary position-relative">
+                Herausforderungen  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger">
+                    @ViewBag.NotificationCount
+                    <span class="visually-hidden">offene Herausforderungen</span>
+                </span>
+            </a>
+        </div>
+    </div>
 </div>
+
 
 @section scripts {
     <script>

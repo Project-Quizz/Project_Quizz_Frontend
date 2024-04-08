@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Project_Quizz_API.Models.DTOs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -15,11 +16,6 @@ namespace Project_Quizz_Frontend.Models
 		public int questionCount { get; set; }
 		public List<QuizAttemptModel> quiz_Attempts { get; set; }
 		public List<QuizQuestionModel> question { get; set; }
-
-		// Additional properties to support quiz flow
-		//public int CurrentQuestionIndex { get; set; } = 0;
-		//public QuizQuestionModel CurrentQuestion => question != null && question.Count > CurrentQuestionIndex ? question[CurrentQuestionIndex] : null;
-		//public bool HasNextQuestion => question != null && question.Count > 0 && CurrentQuestionIndex + 1 < question.Count;
 	}
 	public class QuizAttemptModel
 	{
@@ -43,4 +39,13 @@ namespace Project_Quizz_Frontend.Models
 		public string answerText { get; set; }
 		public bool isCorrectAnswer { get; set; }
 	}
+
+    public class GetSingleQuizzesFromUserDto
+    {
+        public int QuizId { get; set; }
+        public DateTime QuizCreated { get; set; }
+        public bool UserCompletedQuiz { get; set; }
+        public int Score { get; set; }
+        public QuizCategorieDto Categorie { get; set; }
+    }
 }

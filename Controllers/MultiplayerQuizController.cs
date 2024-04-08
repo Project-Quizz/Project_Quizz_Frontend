@@ -11,13 +11,22 @@ namespace Project_Quizz_Frontend.Controllers
 {
     public class MultiplayerQuizController : Controller
     {
-		private readonly QuizApiService _quizApiService;
+		private readonly MultiplayerApiService _multiQuizApiService;
+        private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
 
-        public MultiplayerQuizController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
+        public MultiplayerQuizController(MultiplayerApiService multiQuizApiService, QuizApiService quizApiService, UserManager<IdentityUser> userManager)
         {
+            _multiQuizApiService = multiQuizApiService;
             _quizApiService = quizApiService;
             _userManager = userManager;
+        }
+
+        public async Task<IActionResult> MultiplayerIndex()
+        {
+            var notificationCount = await LoadMultiplayerNotification();
+            ViewBag.NotificationCount = notificationCount.ToString();
+            return View();
         }
 
         public IActionResult MultiQuizSession(GetQuizQuestionDto newQuestion)
@@ -38,10 +47,20 @@ namespace Project_Quizz_Frontend.Controllers
         public async Task<IActionResult> ChallengesOverview()
         {
             var quizList = await LoadChallengesFromUser();
-            foreach (var quiz in quizList)
+            if (quizList == null)
             {
-                var opponend = _userManager.Users.FirstOrDefault(x => x.Id == quiz.OpponentUser);
-                quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                quizList = new List<GetMultiQuizzesFromUserDto>();
+            } else
+            {
+                foreach (var quiz in quizList)
+                {
+                    var opponend = _userManager.Users.FirstOrDefault(x => x.Id == quiz.OpponentUser);
+                    if (opponend == null)
+                    {
+                        quiz.OpponentUser = "Anonym";
+                    }
+                    quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                }
             }
             return View(quizList);
         }
@@ -91,7 +110,7 @@ namespace Project_Quizz_Frontend.Controllers
 				return RedirectToAction("SelectOpponent");
 			}
 
-			var response = await _quizApiService.CreateMultiplayerQuizSession(userOne, userTwoId.Id, categorieId);
+			var response = await _multiQuizApiService.CreateMultiplayerQuizSession(userOne, userTwoId.Id, categorieId);
 
             if (!response.HttpResponse.IsSuccessStatusCode)
             {
@@ -105,22 +124,29 @@ namespace Project_Quizz_Frontend.Controllers
         public async Task<IActionResult> GetQuestion(int quizId)
         {
             var userId = _userManager.GetUserId(User);
-            var response = await _quizApiService.GetQuestionForMultiQuiz(quizId, userId);
 
-            if (HttpContext.Session.GetString("MultiQuizQuestion") != null)
+            var (quizQuestion, statusCode) = await _multiQuizApiService.GetQuestionForMultiQuiz(quizId, userId);
+
+            if (statusCode == HttpStatusCode.OK)
             {
-                HttpContext.Session.Remove("MultiQuizQuestion");
+                if (HttpContext.Session.GetString("MultiQuizQuestion") != null)
+                {
+                    HttpContext.Session.Remove("MultiQuizQuestion");
+                }
+
+                HttpContext.Session.SetString("MultiQuizQuestion", JsonConvert.SerializeObject(quizQuestion));
+
+                return View("MultiQuizSession", quizQuestion);
             }
 
-            HttpContext.Session.SetString("MultiQuizQuestion", JsonConvert.SerializeObject(response.Result));
-
-            return View("MultiQuizSession", response.Result);
+            TempData["ErrorMessage"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> QuizComplete(int quizId)
         {
             var userId = _userManager.GetUserId(User);
-            var (quizResult, statusCode) = await _quizApiService.GetResultFromMultiQuiz(quizId, userId);
+            var (quizResult, statusCode) = await _multiQuizApiService.GetResultFromMultiQuiz(quizId, userId);
 
             if(statusCode == HttpStatusCode.OK)
             {
@@ -149,7 +175,7 @@ namespace Project_Quizz_Frontend.Controllers
                 UserId = userId,
             };
 
-            var response = await _quizApiService.UpdateMultiQuizSession(updateMultiQuizSessionObj);
+            var response = await _multiQuizApiService.UpdateMultiQuizSession(updateMultiQuizSessionObj);
 
 			if (response.StatusCode == HttpStatusCode.BadRequest)
 			{
@@ -200,7 +226,7 @@ namespace Project_Quizz_Frontend.Controllers
         {
             var userId = _userManager.GetUserId(User);
 
-            var (result, statusCode) = await _quizApiService.GetMultiQuizzesFromUser(userId);
+            var (result, statusCode) = await _multiQuizApiService.GetMultiQuizzesFromUser(userId);
 
             if (statusCode != HttpStatusCode.OK)
             {
@@ -209,7 +235,21 @@ namespace Project_Quizz_Frontend.Controllers
             }
 
             return result;
-            
+        }
+
+        private async Task<int> LoadMultiplayerNotification()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var (result, statusCode) = await _multiQuizApiService.GetMultiplayerNotificationsFromUser(userId);
+
+            if (statusCode != HttpStatusCode.OK)
+            {
+                TempData["ErrorMessage"] = "Es konnten keine Notifications geladen werden. Bitte wende dich an den Support!";
+                return result;
+            }
+
+            return result;
         }
     }
 }

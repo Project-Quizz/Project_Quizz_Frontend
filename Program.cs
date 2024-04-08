@@ -19,6 +19,10 @@ var apiKey = builder.Configuration["ApiKey"];
 builder.Services.AddTransient(_ => new ApiKeyHandler(apiKey));
 builder.Services.AddHttpClient<QuizApiService>()
 	.AddHttpMessageHandler<ApiKeyHandler>();
+builder.Services.AddHttpClient<MultiplayerApiService>()
+    .AddHttpMessageHandler<ApiKeyHandler>();
+builder.Services.AddHttpClient<SingleplayerApiService>()
+    .AddHttpMessageHandler<ApiKeyHandler>();
 
 builder.Services.AddDistributedMemoryCache();
 

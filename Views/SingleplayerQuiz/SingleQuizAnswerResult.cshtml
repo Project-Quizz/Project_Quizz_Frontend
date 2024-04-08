@@ -58,14 +58,14 @@
 			<div>
 				@if (!Model.QuizComplete)
 				{
-					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SoloQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SingleplayerQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
 					<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
 				}
 			</div>
 		</form>
 		@if (Model.QuizComplete)
 		{
-			<button class="btn btn-success" onclick="location.href='@Url.Action("QuizComplete", "SoloQuiz", new { quizId = Model.QuizId})'">Quiz Abschließen</button>
+			<button class="btn btn-success" onclick="location.href='@Url.Action("QuizComplete", "SingleplayerQuiz", new { quizId = Model.QuizId})'">Quiz Abschließen</button>
 		}
 	</div>
 	<div class="progress">

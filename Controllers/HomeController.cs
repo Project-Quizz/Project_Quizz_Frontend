@@ -20,16 +20,6 @@ namespace Project_Quizz_Frontend.Controllers
 			return View();
 		}
 
-		public IActionResult ContributeSettings()
-		{
-			return View();
-		}
-
-		public IActionResult MultiplayerIndex()
-		{
-			return View();
-		}
-
 		public IActionResult Privacy()
 		{
 			return View();

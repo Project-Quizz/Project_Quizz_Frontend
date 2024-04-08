@@ -1,0 +1,77 @@
+﻿@model List<GetSingleQuizzesFromUserDto>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card  ">
+    <div class="card-header text-center">
+        <h2>Einzelspielerquiz laden</h2>
+    </div>
+    <form asp-controller="SoloQuiz" asp-action="GetQuestion">
+        <div class="card-body">
+            <div>
+                <input hidden name="quizId" id="selectedQuiz" value="" type="text" />
+            </div>
+            <table id="quizOverview" class="display hover" style="width:100%">
+                <caption>Übersicht der User für den Multiplayer</caption>
+                <thead>
+                    <tr>
+                        <th class="text-start">Erstellt am</th>
+                        <th>Kategorie</th>
+                        <th>Aktueller Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quiz in Model)
+                    {
+                        if (quiz.UserCompletedQuiz == false)
+                        {
+                            <tr id="@quiz.QuizId">
+                                <td class="text-start">@quiz.QuizCreated.ToShortDateString()</td>
+                                <td>@quiz.Categorie.Name</td>
+                                <td>@quiz.Score</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary" id="confirmButton" disabled>Quiz Laden</button>
+        </div>
+    </form>
+</div>
+
+
+@section scripts {
+    <script>
+        const table = new DataTable('#quizOverview', {
+            pagingType: 'full_numbers',
+            scrollX: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/de-DE.json'
+            }
+        });
+
+        table.on('click', 'tbody tr', (e) => {
+            let classList = e.currentTarget.classList;
+            let confirmButton = document.getElementById("confirmButton");
+
+            if (classList.contains('selected')) {
+                classList.remove('selected');
+                document.getElementById("selectedQuiz").value = "";
+                confirmButton.disabled = true;
+            } else {
+                table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+                classList.add('selected');
+                let quizId = e.currentTarget.id;
+                document.getElementById("selectedQuiz").value = quizId;
+                confirmButton.disabled = false;
+            }
+        });
+    </script>
+}
