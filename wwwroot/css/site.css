@@ -18,5 +18,55 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+    body::before {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-image: url("../pictures/education.jpg") !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        opacity: 0.5 !important;
+        z-index: -1 !important;  
+    }
+.card-body-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.btn-menu {
+    width: 100% !important;
+    max-width: 300px !important;
+}
+
+.btn-menu-footer {
+    width: 100% !important;
+    max-width: 200px !important;
+}
+
+@media (max-width: 768px) {
+    .btn-menu {
+        max-width: 100% !important; 
+    }
+}
+
+.badge-button {
+    transform: translate(50%, -50%)!important;
+}
+
+.form-group-ddw {
+    width: 100% !important;
+}
+
+.form-control-ddw {
+    width: 100% !important;
+    min-width: 200px !important;
 }

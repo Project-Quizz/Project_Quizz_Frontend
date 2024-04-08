@@ -9,12 +9,12 @@ using System.Net;
 namespace Project_Quizz_Frontend.Controllers
 {
     [Authorize]
-    public class CreateQuestionController : Controller
+    public class MyAreaController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
 
-		public CreateQuestionController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
+		public MyAreaController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
 			_userManager = userManager;
@@ -49,7 +49,12 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(model);
 		}
 
-		public async Task<IActionResult> MyQuestions()
+        public IActionResult MyAreaIndex()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> MyQuestions()
 		{
             var userId = _userManager.GetUserId(User);
 

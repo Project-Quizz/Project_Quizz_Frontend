@@ -2,13 +2,43 @@
 	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-	<h1 class="display-4">Welcome</h1>
-	<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger"
+         role="alert"
+         id="ErrorMessage"
+         data-mdb-position="top-right"
+         data-mdb-stacking="true"
+         data-mdb-width="300px"
+         data-mdb-append-to-body="true">
+        <p>@TempData["ErrorMessage"]<p>
+    </div>
+}
 
-	<!-- Link to the CreateQuiz page -->
-	<a type="button" asp-controller="Home" asp-action="ContributeSettings" class="btn btn-primary" data-mdb-ripple-init>Eigene Inhalte</a>
-	<br/>
-	<br/>
-	<a type="button" asp-controller="SoloQuiz" asp-action="SoloQuizCategorySelection" class="btn btn-primary">Einzelspieler</a>
+<div class="card text-center border border-primary shadow-0">
+    <div class="card-header"><h2>Startmenü</h2></div>
+
+    <div class="card-body card-body-menu mt-4 mb-4">
+        <a type="button" asp-controller="MyArea" asp-action="MyAreaIndex" class="btn btn-primary btn-menu" data-mdb-ripple-init>Mein Bereich</a>
+        <br />
+        <br />
+        <a type="button" asp-controller="SingleplayerQuiz" asp-action="SingleplayerIndex" class="btn btn-primary btn-menu">Einzelspieler</a>
+        <br />
+        <br />
+        <a type="button" asp-controller="MultiplayerQuiz" asp-action="MultiplayerIndex" class="btn btn-primary btn-menu">Multiplayer</a>
+    </div>
+    <div class="card-footer">2 days ago</div>
 </div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                var emailSuccessfulDiv = document.getElementById("ErrorMessage");
+                if (emailSuccessfulDiv) {
+                    emailSuccessfulDiv.style.display = "none";
+                }
+            }, 6000);
+        });
+    </script>
+}

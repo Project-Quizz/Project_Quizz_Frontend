@@ -1,0 +1,71 @@
+﻿@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card  ">
+    <form asp-controller="MultiplayerQuiz" asp-action="MultiplayerSettings">
+    <div class="card-header card-header text-center d-flex justify-content-between align-items-center">
+        <div></div>
+        <h2>Multiplayer Einstellungen</h2>
+        <button type="submit" class="btn btn-success" id="confirmButton" disabled>Spieler herausfordern</button>
+     </div>
+		<div class="card-body">
+            <div class="form-outline w-25 mb-4" data-mdb-input-init>
+                <input name="selectedOpponent" id="selectedOpponent" value="Kein Gegner ausgewählt" class="form-control" type="text" readonly />
+                <label class="form-label" for="selectedOpponent">Ausgewählter Gegner</label>
+            </div>
+            <table id="userOverview" class="display hover" style="width:100%">
+                <caption>Übersicht der User für den Multiplayer</caption>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in ViewBag.Users)
+                    {
+                        <tr id="@user">
+                            <td>@user</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+		</div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="MultiplayerQuiz" asp-action="MultiplayerIndex" id="leftButton">Multiplayer Menü</a>
+            <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
+        </div>
+	</form>
+</div>
+
+@section scripts {
+    <script>
+        const table = new DataTable('#userOverview', {
+            pagingType: 'full_numbers',
+            scrollX: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/de-DE.json'
+            }
+        });
+
+        table.on('click', 'tbody tr', (e) => {
+            let classList = e.currentTarget.classList;
+            let confirmButton = document.getElementById("confirmButton");
+
+            if (classList.contains('selected')) {
+                classList.remove('selected');
+                document.getElementById("selectedOpponent").value = "";
+                confirmButton.disabled = true;
+            } else {
+                table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+                classList.add('selected');
+                let username = e.currentTarget.id;
+                document.getElementById("selectedOpponent").value = username;
+                confirmButton.disabled = false;
+            }
+        });
+    </script>
+}

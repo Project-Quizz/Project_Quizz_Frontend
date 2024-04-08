@@ -4,6 +4,12 @@
 	ViewData["Title"] = "Solo Quiz";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger">
+		@TempData["ErrorMessage"]
+	</div>
+}
 @if (TempData["ErrorMessageBadRequest"] != null)
 {
 	<div class="alert alert-danger">
@@ -29,7 +35,7 @@
 		<h2>Frage @completedQuestions</h2>
 	</div>
 	<div class="card-body">
-		<form asp-controller="SoloQuiz" asp-action="SubmitAnswer" method="post">
+		<form asp-controller="SingleplayerQuiz" asp-action="SubmitAnswer" method="post">
 			<label asp-for="@Model.QuestionText"><h5>@Model.QuestionText</h5></label>
 
 			<div class="d-flex justify-content-center mt-4 mb-4">
@@ -63,13 +69,12 @@
 			<div>
 				@if (TempData["ErrorMessageUnauthorized"] != null)
 				{
-					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SoloQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "SingleplayerQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
 				}
 				else
 				{
 					<button type="submit" class="btn btn-primary">Antwort senden</button>
 				}
-				<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
 			</div>
 		</form>
 	</div>

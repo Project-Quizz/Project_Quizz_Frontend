@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Multiplayer";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger"
+         role="alert"
+         id="ErrorMessage"
+         data-mdb-position="top-right"
+         data-mdb-stacking="true"
+         data-mdb-width="300px"
+         data-mdb-append-to-body="true">
+        <p>@TempData["ErrorMessage"]<p>
+    </div>
+}
+
+<div class="card text-center">
+    <div class="card-header">
+        <h2>Mitwirken Menü</h2>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary btn-menu" data-mdb-ripple-init>Spieler herausfordern</a>
+        </div>
+        <div class="mb-4">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="ChallengesOverview" class="btn btn-primary position-relative btn-menu">
+                Herausforderungen  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger badge-button">
+                    @ViewBag.NotificationCount
+                    <span class="visually-hidden">offene Herausforderungen</span>
+                </span>
+            </a>
+        </div>
+        <div>
+            <a type="button" class="btn btn-primary btn-menu" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                // Zugriff auf das div mit der ID 'EmailSuccessful'
+                var emailSuccessfulDiv = document.getElementById("ErrorMessage");
+                if (emailSuccessfulDiv) {
+                    emailSuccessfulDiv.style.display = "none";
+                }
+            }, 6000);
+        });
+    </script>
+}
