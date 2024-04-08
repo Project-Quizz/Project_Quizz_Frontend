@@ -8,10 +8,12 @@
 }
 
 <div class="card  ">
-    <div class="card-header text-center">
-        <h2>Offene Herausforderungen</h2>
-        </div>
     <form asp-controller="MultiplayerQuiz" asp-action="GetQuestion">
+        <div class="card-header text-center d-flex justify-content-between align-items-center">
+            <div></div>
+            <h2>Offene Herausforderungen</h2>
+            <button type="submit" class="btn btn-success" id="confirmButton" disabled>Quiz Laden</button>
+        </div>
         <div class="card-body">
             <div>
                 <input hidden name="quizId" id="selectedQuiz" value="" type="text" />
@@ -42,8 +44,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary" id="confirmButton" disabled>Quiz Laden</button>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="MultiplayerQuiz" asp-action="MultiplayerIndex" id="leftButton">Multiplayer Menü</a>
+            <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
         </div>
     </form>
 </div>

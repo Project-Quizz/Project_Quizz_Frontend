@@ -22,8 +22,8 @@
     <div class="card-header text-center d-flex justify-content-between align-items-center">
         <div></div>
         <h2>Meine Fragen</h2>
-        <a asp-controller="CreateQuestion" asp-action="CreateQuestion" class="btn btn-success">
-            <i class="fas fa-square-plus fa-2x"></i>
+        <a asp-controller="MyArea" asp-action="CreateQuestion" class="btn btn-success">
+            Neue Frage erstellen
         </a>
     </div>
 
@@ -48,6 +48,10 @@
                     }
             </tbody>
         </table>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="MyArea" asp-action="MyAreaIndex" id="leftButton">Mein Bereich</a>
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
     </div>
 </div>
 

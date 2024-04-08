@@ -47,6 +47,11 @@ body {
     max-width: 300px !important;
 }
 
+.btn-menu-footer {
+    width: 100% !important;
+    max-width: 200px !important;
+}
+
 @media (max-width: 768px) {
     .btn-menu {
         max-width: 100% !important; 

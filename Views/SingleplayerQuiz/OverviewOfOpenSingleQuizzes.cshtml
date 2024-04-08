@@ -7,11 +7,13 @@
     </div>
 }
 
-<div class="card  ">
-    <div class="card-header text-center">
-        <h2>Einzelspielerquiz laden</h2>
-    </div>
+<div class="card ">
     <form asp-controller="SoloQuiz" asp-action="GetQuestion">
+    <div class="card-header text-center d-flex justify-content-between align-items-center">
+        <div></div>
+        <h2>Einzelspielerquiz laden</h2>
+        <button type="submit" class="btn btn-success" id="confirmButton" disabled>Quiz Laden</button>
+    </div>
         <div class="card-body">
             <div>
                 <input hidden name="quizId" id="selectedQuiz" value="" type="text" />
@@ -40,10 +42,11 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary" id="confirmButton" disabled>Quiz Laden</button>
-        </div>
     </form>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="SingleplayerQuiz" asp-action="SingleplayerIndex" id="leftButton">Einzelspieler Menü</a>
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
+    </div>
 </div>
 
 

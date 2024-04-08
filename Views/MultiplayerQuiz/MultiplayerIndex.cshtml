@@ -19,7 +19,7 @@
     <div class="card-header">
         <h2>Mitwirken Menü</h2>
     </div>
-    <div class="card-body card-body-menu">
+    <div class="card-body">
         <div class="mb-4">
             <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary btn-menu" data-mdb-ripple-init>Spieler herausfordern</a>
         </div>
@@ -30,6 +30,9 @@
                     <span class="visually-hidden">offene Herausforderungen</span>
                 </span>
             </a>
+        </div>
+        <div>
+            <a type="button" class="btn btn-primary btn-menu" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
         </div>
     </div>
 </div>

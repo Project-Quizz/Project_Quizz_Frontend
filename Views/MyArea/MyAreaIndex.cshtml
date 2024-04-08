@@ -6,12 +6,15 @@
     <div class="card-header">
         <h2>Mein Bereich</h2>
     </div>
-    <div class="card-body card-body-menu mt-4 mb-4">
+    <div class="card-body mt-4 mb-4">
         <div class="mb-4">
             <a type="button" asp-controller="MyArea" asp-action="CreateQuestion" class="btn btn-primary btn-menu" >Frage erstellen</a>
         </div>
         <div class="mb-4">
             <a type="button" asp-controller="MyArea" asp-action="MyQuestions" class="btn btn-primary btn-menu" >Meine Fragen</a>
+        </div>
+        <div>
+            <a type="button" class="btn btn-primary btn-menu" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
         </div>
     </div>
 </div>
