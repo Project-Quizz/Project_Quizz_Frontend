@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Project_Quizz_API.Data;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
 using System.Net;
