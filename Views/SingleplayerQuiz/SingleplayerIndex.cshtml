@@ -15,16 +15,16 @@
     </div>
 }
 
-<div class="card text-center">
+<div class="card text-center border border-primary shadow-0">
     <div class="card-header">
         <h2>Mitwirken Menü</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body card-body-menu mt-4 mb-4">
         <div class="mb-4">
-            <a type="button" asp-controller="SingleplayerQuiz" asp-action="SingleplayerSettings" class="btn btn-primary" data-mdb-ripple-init>Einzelspiel starten</a>
+            <a type="button" asp-controller="SingleplayerQuiz" asp-action="SingleplayerSettings" class="btn btn-primary btn-menu" data-mdb-ripple-init>Einzelspiel starten</a>
         </div>
         <div class="mb-4">
-            <a type="button" asp-controller="SingleplayerQuiz" asp-action="OverviewOfOpenSingleQuizzes" class="btn btn-primary position-relative">
+            <a type="button" asp-controller="SingleplayerQuiz" asp-action="OverviewOfOpenSingleQuizzes" class="btn btn-primary position-relative btn-menu">
                 Offene Einzelspiele
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger">
                     @ViewBag.NotificationCount

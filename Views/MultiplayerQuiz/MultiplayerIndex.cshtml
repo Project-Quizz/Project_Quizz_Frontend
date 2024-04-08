@@ -19,13 +19,13 @@
     <div class="card-header">
         <h2>Mitwirken Menü</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body card-body-menu">
         <div class="mb-4">
-            <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary" data-mdb-ripple-init>Spieler herausfordern</a>
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="SelectOpponent" class="btn btn-primary btn-menu" data-mdb-ripple-init>Spieler herausfordern</a>
         </div>
         <div class="mb-4">
-            <a type="button" asp-controller="MultiplayerQuiz" asp-action="ChallengesOverview" class="btn btn-primary position-relative">
-                Herausforderungen  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger">
+            <a type="button" asp-controller="MultiplayerQuiz" asp-action="ChallengesOverview" class="btn btn-primary position-relative btn-menu">
+                Herausforderungen  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-danger badge-button">
                     @ViewBag.NotificationCount
                     <span class="visually-hidden">offene Herausforderungen</span>
                 </span>

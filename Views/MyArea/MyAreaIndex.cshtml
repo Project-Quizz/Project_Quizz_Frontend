@@ -1,17 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Mitwirken";
+    ViewData["Title"] = "Mein Bereich";
 }
 
-<div class="card text-center">
+<div class="card text-center border border-primary shadow-0">
     <div class="card-header">
-        <h2>Mitwirken Menü</h2>
+        <h2>Mein Bereich</h2>
     </div>
-    <div class="card-body">
+    <div class="card-body card-body-menu mt-4 mb-4">
         <div class="mb-4">
-            <a type="button" asp-controller="MyArea" asp-action="CreateQuestion" class="btn btn-primary" data-mdb-ripple-init>Frage erstellen</a>
+            <a type="button" asp-controller="MyArea" asp-action="CreateQuestion" class="btn btn-primary btn-menu" >Frage erstellen</a>
         </div>
         <div class="mb-4">
-            <a type="button" asp-controller="MyArea" asp-action="MyQuestions" class="btn btn-primary" data-mdb-ripple-init>Meine Fragen</a>
+            <a type="button" asp-controller="MyArea" asp-action="MyQuestions" class="btn btn-primary btn-menu" >Meine Fragen</a>
         </div>
     </div>
 </div>

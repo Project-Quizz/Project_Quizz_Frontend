@@ -1,20 +1,39 @@
 ﻿@{
-	ViewData["Title"] = "Select Quiz Category";
+	ViewData["Title"] = "Einzelspieler Einstellungen";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="card text-center border border-primary shadow-0">
+	<div class="card-header"><h2>Einzelspieler Einstellungen</h2></div>
 
-<form asp-controller="SingleplayerQuiz" asp-action="CreateNewSingleQuizSession">
-	<div class="form-group">
-		<label for="categorieId">Select Category:</label>
-		<select class="form-control" id="categorieId" name="categorieId">
-			<option value="">Please select a category</option>
-			@foreach (var category in ViewBag.Categories)
-			{
-				<option value="@category.CategorieId">@category.Name</option>
-			}
-		</select>
+	<div class="card-body card-body-menu mt-4 mb-4">
+		<form asp-controller="SingleplayerQuiz" asp-action="CreateNewSingleQuizSession">
+			<div class="form-group form-group_ddw">
+				<select class="form-control form-control-ddw" id="categorieId" name="categorieId" data-mdb-select-init>
+					<option value="">Please select a category</option>
+					@foreach (var category in ViewBag.Categories)
+					{
+						<option value="@category.CategorieId">@category.Name</option>
+					}
+				</select>
+				<label class="form-label select-label">Kategorie</label>
+			</div>
+			<br />
+			<button type="submit" class="btn btn-primary btn-menu" id="startQuizButton" disabled>Start Quiz</button>
+		</form>
 	</div>
-	<br/>
-	<button type="submit" class="btn btn-primary">Start Quiz</button>
-</form>
+	<div class="card-footer">2 days ago</div>
+</div>
+
+@section scripts {
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function () {
+			var selectElement = document.getElementById('categorieId');
+			var submitButton = document.getElementById('startQuizButton');
+
+			selectElement.addEventListener('change', function () {
+				submitButton.disabled = !this.value;
+			});
+		});
+	</script>
+
+}

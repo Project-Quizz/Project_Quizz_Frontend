@@ -1,17 +1,25 @@
-﻿<div class="card  ">
-    <div class="card-header">Multiplayer Einstellungen</div>
-	<form asp-controller="MultiplayerQuiz" asp-action="CreateMultiplayerSession">
-		<div class="card-body">
-			<select class="form-control mb-4" id="categorieId" name="categorieId">
-				<option value="">Kategorie auswählen</option>
-				@foreach (var category in ViewBag.Categories)
-				{
-					<option value="@category.CategorieId">@category.Name</option>
-				}
-			</select>
-		</div>
-		<div class="card-footer">
-			<button type="submit" class="btn btn-primary">Bestätigen</button>
-		</div>
-	</form>
+﻿@{
+	ViewData["Title"] = "Multiplayer Einstellungen";
+}
+
+<div class="card text-center border border-primary shadow-0">
+	<div class="card-header"><h2>Multiplayer Einstellungen</h2></div>
+
+	<div class="card-body card-body-menu mt-4 mb-4">
+		<form asp-controller="MultiplayerQuiz" asp-action="CreateMultiplayerSession">
+			<div class="card-body">
+				<select class="form-control mb-4" id="categorieId" name="categorieId">
+					<option value="">Kategorie auswählen</option>
+					@foreach (var category in ViewBag.Categories)
+					{
+						<option value="@category.CategorieId">@category.Name</option>
+					}
+				</select>
+			</div>
+			<div class="card-footer">
+				<button type="submit" class="btn btn-primary btn-menu">Bestätigen</button>
+			</div>
+		</form>
+	</div>
+	<div class="card-footer">2 days ago</div>
 </div>
