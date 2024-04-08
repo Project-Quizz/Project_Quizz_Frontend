@@ -73,7 +73,7 @@ namespace Project_Quizz_Frontend.Services
         }
         public async Task<(int result, HttpStatusCode StatusCode)> GetSingleplayerNotificationsFromUser(string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiTestUrl}/Notifications/GetOpenSingleplayerNotifications?userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/Notifications/GetOpenSingleplayerNotifications?userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -87,7 +87,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<(List<GetSingleQuizzesFromUserDto> Result, HttpStatusCode StatusCode)> GetSingleQuizzesFromUser(string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiTestUrl}/SingleQuizWorkshop/GetSingleQuizzesFromUser?userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/SingleQuizWorkshop/GetSingleQuizzesFromUser?userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<List<GetSingleQuizzesFromUserDto>>();
