@@ -1,6 +1,4 @@
-﻿using Project_Quizz_API.Models.DTOs;
-
-namespace Project_Quizz_Frontend.Models
+﻿namespace Project_Quizz_Frontend.Models
 {
     public class IniMultiplayerDtos
     {
