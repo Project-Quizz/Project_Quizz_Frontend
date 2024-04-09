@@ -185,7 +185,15 @@ namespace Project_Quizz_Frontend.Controllers
 
 		private async Task<List<CategorieIdDto>> LoadCategories()
 		{
-			var categories = await _quizApiService.GetAllCategoriesAsync();
+			// Get categories from cache
+			var categories = CategorieCache.Categories;
+
+			// If cache is empty, get categories from API
+			if (categories == null)
+			{
+				categories = await _quizApiService.GetAllCategoriesAsync();
+				CategorieCache.Categories = categories;
+			}
 			return categories;
 		}
 

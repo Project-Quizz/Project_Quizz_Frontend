@@ -86,7 +86,16 @@ namespace Project_Quizz_Frontend.Controllers
 
             HttpContext.Session.SetString("SelectedOpponent", selectedOpponent);
 
-            var categories = await _quizApiService.GetAllCategoriesAsync();
+            // Get the categories from the cache
+            var categories = CategorieCache.Categories;
+
+            //If the cache is empty, get the categories from the API
+            if (categories == null)
+            {
+				categories = await _quizApiService.GetAllCategoriesAsync();
+				CategorieCache.Categories = categories;
+			}
+
 			ViewBag.Categories = categories;
 			return View();
         }

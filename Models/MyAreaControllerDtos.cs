@@ -53,6 +53,11 @@ namespace Project_Quizz_Frontend.Models
         public string Name { get; set; }
     }
 
+    public static class CategorieCache
+    {
+        public static List<CategorieIdDto> Categories { get; set; }
+    }
+
     public class GetAllQuestionsFromUserDto
     {
         public int QuestionId { get; set; }

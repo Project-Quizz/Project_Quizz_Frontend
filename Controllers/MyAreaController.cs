@@ -24,7 +24,16 @@ namespace Project_Quizz_Frontend.Controllers
 		public async Task<IActionResult> CreateQuestion()
 		{
 			var model = new CreateQuizQuestionDto();
-			var categories = await _quizApiService.GetAllCategoriesAsync();
+			
+			// Get the categories from the cache
+			var categories = CategorieCache.Categories;
+
+			// If the cache is empty, get the categories from the API
+			if (categories == null)
+			{
+				categories = await _quizApiService.GetAllCategoriesAsync();
+				CategorieCache.Categories = categories;
+			}
 
 			// Pass categories to the view through ViewBag or ViewData
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
@@ -86,7 +95,16 @@ namespace Project_Quizz_Frontend.Controllers
 
 			HttpContext.Session.SetInt32("QuestionId", questionId);
 
-            var categories = await _quizApiService.GetAllCategoriesAsync();
+			// Get the categories from the cache
+			var categories = CategorieCache.Categories;
+
+			// If the cache is empty, get the categories from the API
+			if (categories == null)
+			{
+				categories = await _quizApiService.GetAllCategoriesAsync();
+				CategorieCache.Categories = categories;
+			}
+
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
 
 			return View(question);
@@ -117,7 +135,16 @@ namespace Project_Quizz_Frontend.Controllers
                 return RedirectToAction("MyQuestions");
             }
 
-            var categories = await _quizApiService.GetAllCategoriesAsync();
+            // Get the categories from the cache
+			var categories = CategorieCache.Categories;
+
+			// If the cache is empty, get the categories from the API
+			if (categories == null)
+			{
+				categories = await _quizApiService.GetAllCategoriesAsync();
+				CategorieCache.Categories = categories;
+			}
+
 			if(!categories.Any(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId))
 			{
                 TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
