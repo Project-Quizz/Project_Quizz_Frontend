@@ -24,8 +24,6 @@ builder.Services.AddHttpClient<MultiplayerApiService>()
 builder.Services.AddHttpClient<SingleplayerApiService>()
     .AddHttpMessageHandler<ApiKeyHandler>();
 
-builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromMinutes(10);
