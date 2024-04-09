@@ -1,50 +1,41 @@
 ﻿@model GetQuestionForEditingDto
 
-@if (TempData["ErrorMessage"] != null)
+@if (TempData["SuccessMessage"] != null)
 {
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
+    <div class="alert alert-success"
+         role="alert"
+         id="SuccessMessage"
+         data-mdb-position="top-right"
+         data-mdb-stacking="true"
+         data-mdb-width="300px"
+         data-mdb-append-to-body="true">
+        <i class="far fa-circle-check me-2"></i>
+        @TempData["SuccessMessage"]
     </div>
 }
 
-<div class="card ">
-    <form asp-controller="MyArea" asp-action="UpdateModifiedQuestion">
-        <div class="card-header">
-            <div class="text-center mb-4">
-                <h4>Frage anpassen</h4>
-            </div>
-            <div class="form-outline" data-mdb-input-init>
-                <input type="text" id="question" class="form-control form-control-lg" asp-for="@Model.QuestionText"/>
-                <label class="form-label" for="question">Frage</label>
-            </div>
-        </div>
-        <div class="card-body">
-            @for (int i = 0; i < Model.Answers.Count; i++)
-            {
-                <input hidden asp-for="@Model.Answers[i].Id" />
-                <div class="form-outline mb-2" data-mdb-input-init>
-                    <input type="text" id="@("answer" + i)" class="form-control form-control-lg" asp-for="@Model.Answers[i].AnswerText" />
-                    <label class="form-label" for="@("answer" + i)">@("Antwort" + " " + (i+1))</label>
-                </div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger"
+         role="alert"
+         id="ErrorMessage"
+         data-mdb-position="top-right"
+         data-mdb-stacking="true"
+         data-mdb-width="300px"
+         data-mdb-append-to-body="true">
+        <i class="fas fa-skull-crossbones me-2"></i>
+        <p>@TempData["ErrorMessage"]<p>
+    </div>
+}
 
-                if (Model.Answers[i].IsCorrectAnswer)
-                {
-                    <div class="form-check mb-4">
-                        <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" checked/>
-                        <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
-                    </div>
-                } else
-                {
-                    <div class="form-check mb-4">
-                        <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" />
-                        <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
-                    </div>
-                }
-            }
-        </div>
-        <div class="card-footer">
-            <div class="mb-4">
-                <select id="categorieSelect" data-mdb-select-init data-selected-categorie="@Model.Categorie.CategorieId" asp-for="@Model.Categorie.CategorieId">
+<div class="card text-center border border-primary shadow-0">
+    <div class="card-header"><h2>Frage anpassen</h2></div>
+
+    <div class="card-body card-body-menu mt-4 mb-4">
+        <form asp-controller="MyArea" asp-action="UpdateModifiedQuestion">
+
+            <div class="form-group mb-4">
+                <select id="categorieSelect" data-mdb-select-init data-selected-categorie="@Model.Categorie.CategorieId" asp-for="@Model.Categorie.CategorieId" required>
                     @foreach (var category in ViewBag.Categories)
                     {
                         <option value="@category.CategorieId">@category.Name</option>
@@ -52,18 +43,63 @@
                 </select>
                 <label class="form-label select-label">Kategorie</label>
             </div>
-            <div>
-                <button type="submit" class="btn btn-primary">Speichern</button>
+
+            <div class="form-outline mb-4" data-mdb-input-init>
+                <input type="text" id="question" class="form-control form-control-lg" asp-for="@Model.QuestionText" required />
+                <label class="form-label" for="question">Frage</label>
             </div>
-        </div>
-    </form>
+
+            <div class="row mb-4">
+                @for (int i = 0; i < Model.Answers.Count; i++)
+                {
+                    <div class="col-md-6 form-group mb-4">
+                        <input hidden asp-for="@Model.Answers[i].Id" />
+                        <div class="form-outline mb-2" data-mdb-input-init>
+                            <input type="text" id="@("answer" + i)" class="form-control form-control-lg" asp-for="@Model.Answers[i].AnswerText" required />
+                            <label class="form-label" for="@("answer" + i)">@("Antwort" + " " + (i + 1))</label>
+                        </div>
+
+                        @if (Model.Answers[i].IsCorrectAnswer)
+                        {
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" checked />
+                                <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="radio" value="@i" name="isCorrectAnswerRadio" id="@("answer" + i + "IsCorrect")" />
+                                <label class="form-check-label" for="@("answer" + i + "IsCorrect")"> Richtige Antwort </label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <button type="submit" class="btn btn-success btn-menu" id="saveButton">Speichern</button>
+        </form>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="MyArea" asp-action="MyAreaIndex" id="leftButton">Mein Bereich</a>
+        <a type="button" class="btn btn-primary btn-menu-footer" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
+    </div>
 </div>
+
+
 
 @section scripts {
     <script>
-        const singleSelect = document.querySelector('#categorieSelect');
-        const selectedCategorie = singleSelect.dataset.selectedCategorie;
-        const singleSelectInstance = mdb.Select.getInstance(singleSelect);
-        singleSelectInstance.setValue(selectedCategorie);
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                var errorDiv = document.getElementById("ErrorMessage");
+                var successDiv = document.getElementById("SuccessMessage")
+                if (errorDiv) {
+                    errorDiv.style.display = "none";
+                }
+                if (successDiv) {
+                    successDiv.style.display = "none";
+                }
+            }, 6000);
+        });
     </script>
 }

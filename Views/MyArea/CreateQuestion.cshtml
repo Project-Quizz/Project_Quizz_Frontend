@@ -38,7 +38,6 @@
 
 			<div class="form-group mb-4">
 				<select class="form-control" id="CategorieId" name="Categorie.CategorieId" data-mdb-select-init required>
-					<option value="">Kategorie auswählen</option>
 					@foreach (var category in ViewBag.Categories)
 					{
 						<option value="@category.CategorieId">@category.Name</option>
