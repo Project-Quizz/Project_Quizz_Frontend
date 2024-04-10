@@ -23,6 +23,18 @@
 	Feedback erfolgreich eingereicht
 </div>
 
+<div class="alert alert-danger"
+	 role="alert"
+	 id="ErrorMessage"
+	 data-mdb-position="top-right"
+	 data-mdb-stacking="true"
+	 data-mdb-width="300px"
+	 data-mdb-append-to-body="true"
+	 style="display: none;">
+	<i class="far fa-circle-check me-2"></i>
+	Es gab ein Problem beim verarbeiten deines Feedback. Bitte probiere es später nochmal!
+</div>
+
 <div class="card text-center">
 	@if (Model.GivenAnswerIds != null && Model.GivenAnswerIds.All(x => x.IsCorrectAnswer))
 	{
@@ -125,20 +137,21 @@
 						questionId: questionId,
 						feedback: feedback
 					},
-					success: function () {
+					success: function (response) {
 						$('#feedbackModal').modal('hide');
 
-						// Anzeigen der Erfolgsmeldung
-						var successDiv = document.getElementById("SuccessMessage");
-						if (successDiv) {
-							successDiv.style.display = "block";  // Erfolgsmeldung sichtbar machen
-							setTimeout(function () {
-								successDiv.style.display = "none"; // Erfolgsmeldung nach 6 Sekunden ausblenden
-							}, 6000);
+						if (response.success) {
+							// Zeige Erfolgsmeldung
+							$('#SuccessMessage').show().delay(6000).fadeOut();
+						} else {
+							// Zeige Fehlermeldung
+							$('#ErrorMessage').show().delay(6000).fadeOut();
 						}
 					},
 					error: function () {
-						alert('Es gab einen Fehler beim Senden des Feedbacks.');
+						$('#feedbackModal').modal('hide');
+						// Zeige Fehlermeldung für Netzwerk- oder Serverfehler
+						$('#ErrorMessage').show().delay(6000).fadeOut();
 					}
 				});
 			});
