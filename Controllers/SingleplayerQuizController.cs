@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
@@ -110,6 +111,12 @@ namespace Project_Quizz_Frontend.Controllers
 			var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
 			var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
 			var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
+
+			if (selectedAnswerIds.IsNullOrEmpty())
+			{
+                TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
+                return View("SingleQuizSession", quizQuestion);
+            }
 
 			var updateSinbgleQuizSessionObj = new UpdateSingleQuizSessionDto
 			{
