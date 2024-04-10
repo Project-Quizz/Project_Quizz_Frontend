@@ -43,7 +43,15 @@
                         <tr>
                             <td>@question.QuestionText</td>
                             <td>@question.Categorie.Name</td>
-                        <td><a class="btn btnGreen" asp-route-questionId="@question.QuestionId" asp-controller="MyArea" asp-action="EditQuestion"><i class="fas fa-pencil"></i></a></td>
+                        <td>
+                            <a class="btn btnGreen position-relative" asp-route-questionId="@question.QuestionId" asp-controller="MyArea" asp-action="EditQuestion">
+                                <i class="fas fa-pencil"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-info">
+                                    @question.FeedbackCount
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </a>
+                        </td>
                         </tr>
                     }
             </tbody>

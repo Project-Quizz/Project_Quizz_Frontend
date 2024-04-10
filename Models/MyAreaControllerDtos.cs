@@ -63,5 +63,6 @@ namespace Project_Quizz_Frontend.Models
         public int QuestionId { get; set; }
         public string QuestionText { get; set; }
         public CategorieIdDto Categorie { get; set; }
+        public int FeedbackCount { get; set; }
     }
 }
