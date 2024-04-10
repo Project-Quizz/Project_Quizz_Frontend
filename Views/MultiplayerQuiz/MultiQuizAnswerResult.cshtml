@@ -127,12 +127,11 @@
 					success: function () {
 						$('#feedbackModal').modal('hide');
 
-						// Anzeigen der Erfolgsmeldung
 						var successDiv = document.getElementById("SuccessMessage");
 						if (successDiv) {
-							successDiv.style.display = "block";  // Erfolgsmeldung sichtbar machen
+							successDiv.style.display = "block";
 							setTimeout(function () {
-								successDiv.style.display = "none"; // Erfolgsmeldung nach 6 Sekunden ausblenden
+								successDiv.style.display = "none";
 							}, 6000);
 						}
 					},
