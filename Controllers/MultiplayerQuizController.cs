@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
@@ -168,20 +169,28 @@ namespace Project_Quizz_Frontend.Controllers
 		}
 
 		[HttpPost]
-        public async Task<IActionResult> SubmitAnswer(int selectedAnswerId)
+        public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
         {
             var userId = _userManager.GetUserId(User);
             var quizQuestionJson = HttpContext.Session.GetString("MultiQuizQuestion");
             var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
-            var answer = quizQuestion.Answers.FirstOrDefault(x => x.Id == selectedAnswerId);
+            var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
             var updateMultiQuizSessionObj = new UpdateMultiQuizSessionDto
             {
                 QuizId = quizQuestion.QuizId,
                 QuestionId = quizQuestion.QuestionId,
-                AnswerFromUserId = selectedAnswerId,
-                UserId = userId,
+				GivenAnswerIds = new List<MultiQuizGivenAnswerIdsDto>(),
+				UserId = userId,
             };
+
+            foreach (var answer in answers)
+            {
+                updateMultiQuizSessionObj.GivenAnswerIds.Add(new MultiQuizGivenAnswerIdsDto
+                {
+                    QuizQuestionAnswerId = answer.Id,
+                });
+            }
 
             var response = await _multiQuizApiService.UpdateMultiQuizSession(updateMultiQuizSessionObj);
 
@@ -201,17 +210,17 @@ namespace Project_Quizz_Frontend.Controllers
             {
                 QuizId = quizQuestion.QuizId,
                 QuizQuestionDto = quizQuestion,
-                SelectedAnswerId = selectedAnswerId,
-                QuestionCount = quizQuestion.QuestionCount - 1
+                GivenAnswerIds = new List<MultiQuizGivenAnswerIdsViewModel>(),
+				QuestionCount = quizQuestion.QuestionCount - 1
             };
 
-            if (answer != null && answer.IsCorrectAnswer)
+            foreach(var answer in answers)
             {
-                viewModel.CorrectAnswer = true;
-            }
-            else
-            {
-                viewModel.CorrectAnswer = false;
+                viewModel.GivenAnswerIds.Add(new MultiQuizGivenAnswerIdsViewModel
+                {
+                    QuizQuestionAnswerId = answer.Id,
+                    IsCorrectAnswer = answer.IsCorrectAnswer,
+                });
             }
 
             if (response.StatusCode == HttpStatusCode.Accepted)

@@ -104,20 +104,28 @@ namespace Project_Quizz_Frontend.Controllers
         }
 
 		[HttpPost]
-		public async Task<IActionResult> SubmitAnswer(int selectedAnswerId)
+		public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
 		{
 			var userId = _userManager.GetUserId(User);
 			var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
 			var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
-			var answer = quizQuestion.Answers.FirstOrDefault(x => x.Id == selectedAnswerId);
+			var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
 			var updateSinbgleQuizSessionObj = new UpdateSingleQuizSessionDto
 			{
 				QuizId = quizQuestion.QuizId,
 				QuestionId = quizQuestion.QuestionId,
-				AnswerFromUserId = selectedAnswerId,
+				GivenAnswerIds = new List<SingleQuizGivenAnswerIdsDto>(),
 				UserId = userId,
 			};
+
+			foreach (var answer in answers)
+			{
+				updateSinbgleQuizSessionObj.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsDto
+				{
+					QuizQuestionAnswerId = answer.Id,
+				});
+			}
 
 			var response = await _singleplayerApiService.UpdateSingleQuizSession(updateSinbgleQuizSessionObj);
 
@@ -137,17 +145,17 @@ namespace Project_Quizz_Frontend.Controllers
 			{
 				QuizId = quizQuestion.QuizId,
 				QuizQuestionDto = quizQuestion,
-				SelectedAnswerId = selectedAnswerId,
+				GivenAnswerIds = new List<SingleQuizGivenAnswerIdsViewModel>(),
 				QuestionCount = quizQuestion.QuestionCount - 1
 			};
 
-			if (answer != null && answer.IsCorrectAnswer)
+			foreach (var answer in answers)
 			{
-				viewModel.CorrectAnswer = true;
-			}
-			else
-			{
-				viewModel.CorrectAnswer = false;
+				viewModel.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsViewModel
+				{
+					QuizQuestionAnswerId = answer.Id,
+					IsCorrectAnswer = answer.IsCorrectAnswer,
+				});
 			}
 
 			if (response.StatusCode == HttpStatusCode.Accepted)
@@ -185,10 +193,8 @@ namespace Project_Quizz_Frontend.Controllers
 
 		private async Task<List<CategorieIdDto>> LoadCategories()
 		{
-			// Get categories from cache
 			var categories = CategorieCache.Categories;
 
-			// If cache is empty, get categories from API
 			if (categories == null)
 			{
 				categories = await _quizApiService.GetAllCategoriesAsync();

@@ -6,13 +6,18 @@ namespace Project_Quizz_Frontend.Models
     {
         public int QuizId { get; set; }
         public GetQuizQuestionDto QuizQuestionDto { get; set; }
-        public int SelectedAnswerId { get; set; }
-        public bool CorrectAnswer { get; set; }
-        public bool QuizComplete { get; set; }
+		public List<SingleQuizGivenAnswerIdsViewModel> GivenAnswerIds { get; set; }
+		public bool QuizComplete { get; set; }
         public int? QuestionCount { get; set; }
     }
 
-    public class SoloQuizModel
+	public class SingleQuizGivenAnswerIdsViewModel
+	{
+		public int QuizQuestionAnswerId { get; set; }
+		public bool IsCorrectAnswer { get; set; }
+	}
+
+	public class SoloQuizModel
     {
         public int id { get; set; }
         public string userId { get; set; }
@@ -59,11 +64,16 @@ namespace Project_Quizz_Frontend.Models
     {
         public int QuizId { get; set; }
         public int QuestionId { get; set; }
-        public int AnswerFromUserId { get; set; }
-        public string UserId { get; set; }
+		public List<SingleQuizGivenAnswerIdsDto> GivenAnswerIds { get; set; }
+		public string UserId { get; set; }
     }
 
-    public class GetResultFromSingleQuizDto
+	public class SingleQuizGivenAnswerIdsDto
+	{
+		public int QuizQuestionAnswerId { get; set; }
+	}
+
+	public class GetResultFromSingleQuizDto
     {
         public int quizId { get; set; }
         public int Score { get; set; }
