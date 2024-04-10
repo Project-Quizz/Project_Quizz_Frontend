@@ -42,7 +42,7 @@ public class QuizApiService
 
 	public async Task<(List<GetAllQuestionsFromUserDto> Result, HttpStatusCode StatusCode)> GetAllQuestionsFromUser(string userId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
 
 		if(response.IsSuccessStatusCode)
 		{
