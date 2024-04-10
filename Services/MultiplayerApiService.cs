@@ -18,7 +18,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<HttpResponseMessage> UpdateMultiQuizSession(UpdateMultiQuizSessionDto updateSessionObj)
         {
-            var url = $"{_apiBaseUrl}/MultiQuizWorkshop/UpdateMultiQuizSession";
+            var url = $"{_apiTestUrl}/MultiQuizWorkshop/UpdateMultiQuizSession";
 
             var json = JsonConvert.SerializeObject(updateSessionObj);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -30,7 +30,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<(GetResultFromMultiQuizDto Result, HttpStatusCode StatusCode)> GetResultFromMultiQuiz(int quizId, string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/MultiQuizWorkshop/GetResultFromMultiQuiz?quizId={quizId}&userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiTestUrl}/MultiQuizWorkshop/GetResultFromMultiQuiz?quizId={quizId}&userId={userId}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -49,7 +49,7 @@ namespace Project_Quizz_Frontend.Services
                 UserTwo = userTwo,
                 CategorieId = categoryId
             };
-            var url = $"{_apiBaseUrl}/MultiQuizWorkshop/CreateMultiQuizSession";
+            var url = $"{_apiTestUrl}/MultiQuizWorkshop/CreateMultiQuizSession";
 
             var json = JsonConvert.SerializeObject(objectSession);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -74,7 +74,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<(GetQuizQuestionDto Result, HttpStatusCode StatusCode)> GetQuestionForMultiQuiz(int quizId, string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/MultiQuizWorkshop/GetQuestionFromMultiQuizSession?quizId={quizId}&userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiTestUrl}/MultiQuizWorkshop/GetQuestionFromMultiQuizSession?quizId={quizId}&userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<GetQuizQuestionDto>();
@@ -85,7 +85,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<(List<GetMultiQuizzesFromUserDto> Result, HttpStatusCode StatusCode)> GetMultiQuizzesFromUser(string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/MultiQuizWorkshop/GetMultiQuizzesFromUser?userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiTestUrl}/MultiQuizWorkshop/GetMultiQuizzesFromUser?userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<List<GetMultiQuizzesFromUserDto>>();
@@ -96,7 +96,7 @@ namespace Project_Quizz_Frontend.Services
 
         public async Task<(int result, HttpStatusCode StatusCode)> GetMultiplayerNotificationsFromUser(string userId)
         {
-            var response = await _httpClient.GetAsync($"{_apiBaseUrl}/Notifications/GetOpenMultiplayerNotifications?userId={userId}");
+            var response = await _httpClient.GetAsync($"{_apiTestUrl}/Notifications/GetOpenMultiplayerNotifications?userId={userId}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();

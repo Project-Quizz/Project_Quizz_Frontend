@@ -12,7 +12,7 @@
 }
 
 <div class="card text-center">
-	@if (Model.CorrectAnswer)
+	@if (Model.GivenAnswerIds != null && Model.GivenAnswerIds.All(x => x.IsCorrectAnswer))
 	{
 		<div class="alert alert-success">
 			Die Antwort ist richtig!
@@ -35,23 +35,13 @@
 				<div class="row">
 					@foreach (var answer in Model.QuizQuestionDto.Answers)
 					{
-						if (answer.Id == Model.SelectedAnswerId)
-						{
-							<div class="col-md-6 form-group">
-								<div class="form-check">
-									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled checked/>
-									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
-								</div>
+						bool isAnswerGiven = Model.GivenAnswerIds.Any(givenAnswer => givenAnswer.QuizQuestionAnswerId == answer.Id);
+						<div class="col-md-6 form-group">
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
+								<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
 							</div>
-						} else
-						{
-							<div class="col-md-6 form-group">
-								<div class="form-check">
-									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled/>
-									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
-								</div>
-							</div>
-						}
+						</div>
 					}
 				</div>
 			</div>

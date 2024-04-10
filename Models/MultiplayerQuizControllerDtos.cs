@@ -4,21 +4,31 @@
     {
         public int QuizId { get; set; }
         public GetQuizQuestionDto QuizQuestionDto { get; set; }
-        public int SelectedAnswerId { get; set; }
-        public bool CorrectAnswer { get; set; }
+		public List<MultiQuizGivenAnswerIdsViewModel> GivenAnswerIds { get; set; }
         public bool QuizComplete { get; set; }
         public int? QuestionCount { get; set; }
     }
 
-    public class UpdateMultiQuizSessionDto
+	public class MultiQuizGivenAnswerIdsViewModel
+	{
+		public int QuizQuestionAnswerId { get; set; }
+        public bool IsCorrectAnswer { get; set; }
+	}
+
+	public class UpdateMultiQuizSessionDto
     {
         public int QuizId { get; set; }
         public int QuestionId { get; set; }
-        public int AnswerFromUserId { get; set; }
-        public string UserId { get; set; }
+		public List<MultiQuizGivenAnswerIdsDto> GivenAnswerIds { get; set; }
+		public string UserId { get; set; }
     }
 
-    public class IniMultiplayerDtos
+	public class MultiQuizGivenAnswerIdsDto
+	{
+		public int QuizQuestionAnswerId { get; set; }
+	}
+
+	public class IniMultiplayerDtos
     {
         public string UserOne { get; set; }
         public string UserTwo { get; set; }
