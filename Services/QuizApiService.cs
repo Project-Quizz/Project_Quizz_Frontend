@@ -71,4 +71,24 @@ public class QuizApiService
 		var response = await _httpClient.PutAsync($"{_apiBaseUrl}/QuestionWorkshop/UpdateQuestion", content);
 		return response;
 	}
+
+	public async Task<HttpResponseMessage> CreateFeedbackForQuestion(CreateQuizQuestionFeedbackDto feedbackObj)
+	{
+		var json = System.Text.Json.JsonSerializer.Serialize(feedbackObj);
+		var content = new StringContent(json, Encoding.UTF8, "application/json");
+		var response = await _httpClient.PostAsync($"{_apiBaseUrl}/QuestionWorkshop/CreateFeedbackForQuestion", content);
+		return response;
+	}
+
+	public async Task<(List<GetQuizQuestionFeedbackDto> Result, HttpStatusCode StatusCode)> GetQuizQuestionFeedback(int questionId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetQuestionFeedbacks?questionId={questionId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<List<GetQuizQuestionFeedbackDto>>();
+			return (result, response.StatusCode);
+		}
+		return (null, response.StatusCode);
+	}
 }

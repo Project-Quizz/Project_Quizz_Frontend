@@ -80,8 +80,8 @@ namespace Project_Quizz_Frontend.Controllers
 
 		public async Task<IActionResult> EditQuestion(int questionId)
 		{
-			GetQuestionForEditingDto question = await GetSelectedQuestion(questionId);
-			if (question == null)
+            (GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedback) = await GetSelectedQuestion(questionId);
+            if (question == null)
 			{
                 TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
                 return RedirectToAction("MyQuestions");
@@ -95,10 +95,8 @@ namespace Project_Quizz_Frontend.Controllers
 
 			HttpContext.Session.SetInt32("QuestionId", questionId);
 
-			// Get the categories from the cache
 			var categories = CategorieCache.Categories;
 
-			// If the cache is empty, get the categories from the API
 			if (categories == null)
 			{
 				categories = await _quizApiService.GetAllCategoriesAsync();
@@ -106,23 +104,42 @@ namespace Project_Quizz_Frontend.Controllers
 			}
 
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
+			ViewBag.Feedbacks = feedback;
 
 			return View(question);
 		}
 
-		private async Task<GetQuestionForEditingDto> GetSelectedQuestion(int questionId)
-		{
-			var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
-
+        private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)> GetSelectedQuestion(int questionId)
+        {
+            var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
             if (statusCode != HttpStatusCode.OK)
             {
-				return null;
+                return (null, null);
             }
 
-			return question;
-		}
+            var (feedbacks, statusCodeFeedback) = await _quizApiService.GetQuizQuestionFeedback(questionId);
+            if (statusCodeFeedback != HttpStatusCode.OK)
+            {
+                return (question, null);
+            }
 
-		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
+			foreach (var feedback in feedbacks)
+			{
+                var user = await _userManager.FindByIdAsync(feedback.UserId);
+                if (user != null)
+                {
+                    feedback.UserId = user.UserName;
+                }
+                else
+                {
+                    feedback.UserId = "Unbekannter Benutzer";
+                }
+            }
+
+            return (question, feedbacks);
+        }
+
+        public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
 		{
             int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
             if (questionIdNullable.HasValue)
@@ -187,7 +204,6 @@ namespace Project_Quizz_Frontend.Controllers
         [HttpPost]
 		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, int? correctAnswer)
 		{
-			// Set the correct answer based on the selected index
 			if (correctAnswer.HasValue)
 			{
 				for (int i = 0; i < model.Answers.Count; i++)
@@ -196,22 +212,17 @@ namespace Project_Quizz_Frontend.Controllers
 				}
 			}
 
-			// Set the user ID from the current user
 			model.UserId = _userManager.GetUserId(User);
 
-			// Call the API service to create the question
 			var response = await _quizApiService.CreateQuestionAsync(model);
 
-			// Check if the request was successful
 			if (response.IsSuccessStatusCode)
 			{
-				// Display a success message
 				TempData["SuccessMessage"] = "Die Frage wurde erfoglreich erstellt!";
 				return RedirectToAction("CreateQuestion");
 			}
 			else
 			{
-				// Display an error message
 				TempData["ErrorMessage"] = "Leider gab es ein Problem beim erstellen deiner Frage!";
 				return RedirectToAction("CreateQuestion");
 			}

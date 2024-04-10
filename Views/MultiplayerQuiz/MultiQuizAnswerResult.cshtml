@@ -11,6 +11,18 @@
 	double progressPercentage = (double)completedQuestions / totalQuestions * 100;
 }
 
+<div class="alert alert-success"
+	 role="alert"
+	 id="SuccessMessage"
+	 data-mdb-position="top-right"
+	 data-mdb-stacking="true"
+	 data-mdb-width="300px"
+	 data-mdb-append-to-body="true"
+	 style="display: none;">
+	<i class="far fa-circle-check me-2"></i>
+	Feedback erfolgreich eingereicht
+</div>
+
 <div class="card text-center">
 	@if (Model.GivenAnswerIds != null && Model.GivenAnswerIds.All(x => x.IsCorrectAnswer))
 	{
@@ -49,6 +61,9 @@
 				@if (!Model.QuizComplete)
 				{
 					<button type="button" onclick="location.href='@Url.Action("GetQuestion", "MultiplayerQuiz", new { quizId = Model.QuizId})'" class="btn btn-primary">Nächste Frage</button>
+					<button type="button" class="btn btn-primary" data-mdb-modal-init data-mdb-target="#feedbackModal">
+						Feedback
+					</button>
 					<a href="@Url.Action("Index", "Home")" class="btn btn-danger">Quiz Beenden</a>
 				}
 			</div>
@@ -62,4 +77,70 @@
 		<div class="progress-bar rounded-bottom" role="progressbar" style="width: @progressPercentage%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
 	</div>
 </div>
+
+
+
+
+<!-- Feedback Modal -->
+<div class="modal top fade" id="feedbackModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
+	<div class="modal-dialog modal-lg ">
+		<form asp-controller="QuestionFeedback" asp-action="CreateFeedbackForQuestion">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Feedback</h5>
+					<input hidden value="@Model.QuizQuestionDto.QuestionId" name="questionId" />
+					<button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="form-outline" data-mdb-input-init>
+						<textarea class="form-control" rows="4" name="feedback"></textarea>
+						<label class="form-label" for="textAreaExample">Ihr Feedback...</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
+						Close
+					</button>
+					<button id="submitFeedback" type="button" class="btn btn-success">Save changes</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			$('#submitFeedback').click(function () {
+				var questionId = $('input[name="questionId"]').val();
+				var feedback = $('textarea[name="feedback"]').val();
+
+				$.ajax({
+					url: '@Url.Action("CreateFeedbackForQuestion", "QuestionFeedback")',
+					type: 'POST',
+					data: {
+						questionId: questionId,
+						feedback: feedback
+					},
+					success: function () {
+						$('#feedbackModal').modal('hide');
+
+						var successDiv = document.getElementById("SuccessMessage");
+						if (successDiv) {
+							successDiv.style.display = "block";
+							setTimeout(function () {
+								successDiv.style.display = "none";
+							}, 6000);
+						}
+					},
+					error: function () {
+						alert('Es gab einen Fehler beim Senden des Feedbacks.');
+					}
+				});
+			});
+		});
+	</script>
+}
 
