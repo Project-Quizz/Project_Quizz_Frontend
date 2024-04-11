@@ -1,0 +1,102 @@
+﻿@model List<HighscoreDataDto>
+
+@{
+    ViewData["Title"] = "Highscore Übersicht";
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card text-center ">
+    <div class="card-header">
+        <h2>Mein Fortschritt</h2>
+    </div>
+    <div class="card-body">
+
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button data-mdb-collapse-init
+                            class="accordion-button"
+                            type="button"
+                            data-mdb-toggle="collapse"
+                            data-mdb-target="#collapseOne"
+                            aria-expanded="true"
+                            aria-controls="collapseOne">
+                        All Time Highscore
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-mdb-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <partial name="_highscoreOverallPartial" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button data-mdb-collapse-init
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-mdb-toggle="collapse"
+                            data-mdb-target="#collapseTwo"
+                            aria-expanded="false"
+                            aria-controls="collapseTwo">
+                        Singleplayer Übersicht
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-mdb-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <partial name="_highscoreSinglePartial" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button data-mdb-collapse-init
+                            class="accordion-button collapsed"
+                            type="button"
+                            data-mdb-toggle="collapse"
+                            data-mdb-target="#collapseThree"
+                            aria-expanded="false"
+                            aria-controls="collapseThree">
+                        Multiplayer Übersicht
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-mdb-parent="#accordionExample">
+                    <div class="accordion-body">
+
+                        <partial name="_highscoreMultiPartial" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <a type="button" class="btn btn-primary btn-menu" asp-controller="Home" asp-action="Index" id="leftButton">Zum Hauptmenü</a>
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            const tableHighscore = new DataTable('table.display', {
+                pagingType: 'full_numbers',
+                scrollX: true,
+                ordering: false,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/de-DE.json'
+                }
+            });
+        });
+    </script>
+}
