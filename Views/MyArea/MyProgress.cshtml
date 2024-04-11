@@ -1,9 +1,20 @@
-﻿@{
+﻿@model QuizMatchOverviewUserDto
+
+@{
     ViewData["Title"] = "Mein Fortschritt";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="card text-center ">
-    <div class="card-header">Featured</div>
+    <div class="card-header">
+        <h2>Mein Fortschritt</h2>
+    </div>
     <div class="card-body">
 
         <div class="accordion" id="accordionExample">
@@ -21,67 +32,9 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-mdb-parent="#accordionExample">
                     <div class="accordion-body">
-                        <h5 class="mb-4">Medaillen</h5>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-4 mb-md-0">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="p-3 badge-primary rounded-4">
-                                                    <i class="fas fa-medal fa-4x mb-5" style="color: #e1e100"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1 ms-4">
-                                                <p class="text-muted mb-1">Gold</p>
-                                                <h2 class="mb-0">
-                                                    71,897
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4 mb-md-0">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="p-3 badge-primary rounded-4">
-                                                    <i class="fas fa-medal fa-4x mb-5" style="color: #6d7472"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1 ms-4">
-                                                <p class="text-muted mb-1">Silber</p>
-                                                <h2 class="mb-0">
-                                                    146,926
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="p-3 badge-primary rounded-4">
-                                                    <i class="fas fa-medal fa-4x mb-5" style="color: #94634e"></i>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1 ms-4">
-                                                <p class="text-muted mb-1">Bronze</p>
-                                                <h2 class="mb-0">
-                                                    24.57%
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <partial name="_overallMatchOverviewPartial" />
+
                     </div>
                 </div>
             </div>
@@ -99,13 +52,9 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-mdb-parent="#accordionExample">
                     <div class="accordion-body">
-                        <strong>This is the second item's accordion body.</strong> It is hidden by
-                        default, until the collapse plugin adds the appropriate classes that we use to
-                        style each element. These classes control the overall appearance, as well as the
-                        showing and hiding via CSS transitions. You can modify any of this with custom CSS
-                        or overriding our default variables. It's also worth noting that just about any
-                        HTML can go within the <strong>.accordion-body</strong>, though the transition
-                        does limit overflow.
+
+                        <partial name="_singleMatchOverviewPartial" />
+
                     </div>
                 </div>
             </div>
@@ -123,13 +72,7 @@
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-mdb-parent="#accordionExample">
                     <div class="accordion-body">
-                        <strong>This is the third item's accordion body.</strong> It is hidden by default,
-                        until the collapse plugin adds the appropriate classes that we use to style each
-                        element. These classes control the overall appearance, as well as the showing and
-                        hiding via CSS transitions. You can modify any of this with custom CSS or
-                        overriding our default variables. It's also worth noting that just about any HTML
-                        can go within the <strong>.accordion-body</strong>, though the transition does
-                        limit overflow.
+                        <partial name="_multiMatchOverviewPartial" />
                     </div>
                 </div>
             </div>
