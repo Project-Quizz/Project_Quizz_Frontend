@@ -54,6 +54,9 @@ namespace Project_Quizz_Frontend.Controllers
                 return View(new List<HighscoreDataDto>());
             }
 
+			var actualUser = _userManager.GetUserName(User);
+			ViewBag.UserName = actualUser;
+
 			return View(highscoreInformation);
 		}
 
