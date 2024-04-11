@@ -109,9 +109,22 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(question);
 		}
 
-		public IActionResult MyProgress()
+		public async Task<IActionResult> MyProgress()
 		{
-			return View();
+			var userId = _userManager.GetUserId(User);
+            var userInformation = await _quizApiService.GetQuizMatchOverviewFromUser(userId);
+            if (userInformation == null)
+			{
+                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return View(new QuizMatchOverviewUserDto()) ;
+            }
+			if (userId != userInformation.UserId)
+			{
+                TempData["ErrorMessage"] = "Zugriff wurde verweigert";
+                return View(new QuizMatchOverviewUserDto());
+            }
+
+			return View(userInformation);
 		}
 
         private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)> GetSelectedQuestion(int questionId)

@@ -91,4 +91,28 @@ public class QuizApiService
 		}
 		return (null, response.StatusCode);
 	}
+
+	public async Task<QuizMatchOverviewUserDto> GetQuizMatchOverviewFromUser(string userId)
+	{
+		var response = await _httpClient.GetAsync($"{_apiTestUrl}/UserInformation/GetUserProgressInformation?userId={userId}");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<QuizMatchOverviewUserDto>();
+			return (result);
+		}
+		return (null);
+	}
+
+	public async Task<List<HighscoreDataDto>> GetHighscoreData()
+	{
+		var response = await _httpClient.GetAsync($"{_apiTestUrl}/UserInformation/GetHigscroeData");
+
+		if(response.IsSuccessStatusCode)
+		{
+			var result = await response.Content.ReadFromJsonAsync<List<HighscoreDataDto>>();
+			return (result);
+		}
+		return (null);
+	}
 }

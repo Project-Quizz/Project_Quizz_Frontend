@@ -1,0 +1,27 @@
+﻿@model List<HighscoreDataDto>
+
+@{
+    var orderedSingleList = Model.OrderByDescending(x => x.TotalPointWorthSingle).ToList();
+}
+
+<table id="" class="display hover" style="width:100%">
+    <caption>Highscore Tabelle Einzelspieler</caption>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Spiele</th>
+            <th>Punktwert</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in orderedSingleList)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.TotalSingleGames</td>
+                <td>@user.TotalPointWorthSingle</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

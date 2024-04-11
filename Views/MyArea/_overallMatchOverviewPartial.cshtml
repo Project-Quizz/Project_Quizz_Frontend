@@ -1,0 +1,182 @@
+﻿@model QuizMatchOverviewUserDto
+
+@{
+    var resultGold = Model.SingleGoldCount + Model.MultiGoldCount;
+    var resultSilver = Model.SingleSilverCount + Model.MultiSilverCount;
+    var resultBronze = Model.SingleBronzeCount + Model.MultiBronzeCount;
+    var playCount = Model.TotalSingleGamesCount + Model.TotalMultiGamesCount;
+    var pointWorth = Model.TotalPoints / playCount;
+    if (playCount < 6)
+    {
+        var pointWorthFactor = pointWorth / 1.5;
+        pointWorth = (int)Math.Round(pointWorthFactor);
+    }
+}
+
+<h5 class="mb-4">Medaillen</h5>
+<div class="row mb-6">
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-medal fa-4x m-2" style="color: #e1e100"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Gold</p>
+                        <h2 class="mb-0">
+                            @resultGold.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-medal fa-4x m-2" style="color: #6d7472"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Silber</p>
+                        <h2 class="mb-0">
+                            @resultSilver.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-medal fa-4x m-2" style="color: #94634e"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Bronze</p>
+                        <h2 class="mb-0">
+                            @resultBronze.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<h5 class="mb-4">Statistik</h5>
+<div class="row mb-4">
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-hand-spock fa-4x m-2" style="color: #408080"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Spiele Gesamt</p>
+                        <h2 class="mb-0">
+                            @playCount.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-user fa-4x m-2" style="color: #408080"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Einzelspieler Spiele</p>
+                        <h2 class="mb-0">
+                            @Model.TotalSingleGamesCount.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-user-group fa-4x m-2" style="color: #408080"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Multiplayer Spiele</p>
+                        <h2 class="mb-0">
+                            @Model.TotalMultiGamesCount.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-md-6 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-square-poll-horizontal fa-4x m-2" style="color: #408080"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Punkte Gesamt</p>
+                        <h2 class="mb-0">
+                            @Model.TotalPoints.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4 mb-md-0">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="badge-primary rounded-4">
+                            <i class="fas fa-percent fa-4x m-2" style="color: #408080"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <p class="text-muted mb-1">Punkt Wert</p>
+                        <h2 class="mb-0">
+                            @pointWorth.ToString()
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
