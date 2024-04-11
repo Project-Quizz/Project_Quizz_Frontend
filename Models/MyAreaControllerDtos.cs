@@ -25,6 +25,7 @@ namespace Project_Quizz_Frontend.Models
         public string UserId { get; set; }
         public CategorieIdDto Categorie { get; set; }
         public List<QuizAnswersDto> Answers { get; set; }
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class CreateQuizQuestionDto
@@ -36,7 +37,7 @@ namespace Project_Quizz_Frontend.Models
             CategorieId = 1
         };
         public List<AnswerViewModel> Answers { get; set; } = new List<AnswerViewModel>();
-
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class AnswerViewModel

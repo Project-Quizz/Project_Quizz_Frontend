@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project_Quizz_Frontend.Controllers
 {
-    [Authorize]
-    public class MyAreaController : Controller
+	[Authorize]
+	public class MyAreaController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
@@ -24,7 +25,7 @@ namespace Project_Quizz_Frontend.Controllers
 		public async Task<IActionResult> CreateQuestion()
 		{
 			var model = new CreateQuizQuestionDto();
-			
+
 			// Get the categories from the cache
 			var categories = CategorieCache.Categories;
 
@@ -58,119 +59,132 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(model);
 		}
 
-        public IActionResult MyAreaIndex()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> MyQuestions()
+		public IActionResult MyAreaIndex()
 		{
-            var userId = _userManager.GetUserId(User);
+			return View();
+		}
+
+		public async Task<IActionResult> MyQuestions()
+		{
+			var userId = _userManager.GetUserId(User);
 
 			var (questions, statusCode) = await _quizApiService.GetAllQuestionsFromUser(userId);
 
-			if(statusCode != HttpStatusCode.OK)
+			if (statusCode != HttpStatusCode.OK)
 			{
 				TempData["ErrorMessage"] = "Es konnten keine Fragen geladen werden. Bitte versuche es später nochmal.";
 				return View(new List<GetAllQuestionsFromUserDto>());
 			}
 
-            return View(questions);
+			return View(questions);
 		}
 
-		public async Task<IActionResult> EditQuestion(int questionId)
-		{
+        public async Task<IActionResult> EditQuestion(int questionId)
+        {
             (GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedback) = await GetSelectedQuestion(questionId);
+
             if (question == null)
-			{
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+            {
+                TempData["ErrorMessage"] =
+                    "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
                 return RedirectToAction("MyQuestions");
             }
 
             var userId = _userManager.GetUserId(User);
-			if(question.UserId != userId)
-			{
-				return RedirectToAction("MyQuestions");
-			}
+            if (question.UserId != userId)
+            {
+                return RedirectToAction("MyQuestions");
+            }
 
-			HttpContext.Session.SetInt32("QuestionId", questionId);
+            HttpContext.Session.SetInt32("QuestionId", questionId);
 
-			var categories = CategorieCache.Categories;
+            var categories = CategorieCache.Categories;
 
-			if (categories == null)
-			{
-				categories = await _quizApiService.GetAllCategoriesAsync();
-				CategorieCache.Categories = categories;
-			}
+            if (categories == null)
+            {
+                categories = await _quizApiService.GetAllCategoriesAsync();
+                CategorieCache.Categories = categories;
+            }
 
-			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
-			ViewBag.Feedbacks = feedback;
+            ViewBag.Categories = categories ?? new List<CategorieIdDto>();
+            ViewBag.Feedbacks = feedback;
 
-			return View(question);
-		}
+            return View(question);
+        }
 
-		public async Task<IActionResult> MyProgress()
+
+        public async Task<IActionResult> MyProgress()
 		{
 			var userId = _userManager.GetUserId(User);
-            var userInformation = await _quizApiService.GetQuizMatchOverviewFromUser(userId);
-            if (userInformation == null)
+			var userInformation = await _quizApiService.GetQuizMatchOverviewFromUser(userId);
+			if (userInformation == null)
 			{
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-				return View(new QuizMatchOverviewUserDto()) ;
-            }
+				TempData["ErrorMessage"] =
+					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return View(new QuizMatchOverviewUserDto());
+			}
+
 			if (userId != userInformation.UserId)
 			{
-                TempData["ErrorMessage"] = "Zugriff wurde verweigert";
-                return View(new QuizMatchOverviewUserDto());
-            }
+				TempData["ErrorMessage"] = "Zugriff wurde verweigert";
+				return View(new QuizMatchOverviewUserDto());
+			}
 
 			return View(userInformation);
 		}
 
-        private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)> GetSelectedQuestion(int questionId)
-        {
-            var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
-            if (statusCode != HttpStatusCode.OK)
-            {
-                return (null, null);
-            }
+		private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)>
+			GetSelectedQuestion(int questionId)
+		{
+			var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
 
-            var (feedbacks, statusCodeFeedback) = await _quizApiService.GetQuizQuestionFeedback(questionId);
-            if (statusCodeFeedback != HttpStatusCode.OK)
-            {
-                return (question, null);
-            }
+            // Setzen Sie hier den IsMultipleChoice-Wert
+            question.IsMultipleChoice = question.Answers.Count(a => a.IsCorrectAnswer) > 1;
+
+
+            if (statusCode != HttpStatusCode.OK)
+			{
+				return (null, null);
+			}
+
+			var (feedbacks, statusCodeFeedback) = await _quizApiService.GetQuizQuestionFeedback(questionId);
+			if (statusCodeFeedback != HttpStatusCode.OK)
+			{
+				return (question, null);
+			}
 
 			foreach (var feedback in feedbacks)
 			{
-                var user = await _userManager.FindByIdAsync(feedback.UserId);
-                if (user != null)
-                {
-                    feedback.UserId = user.UserName;
-                }
-                else
-                {
-                    feedback.UserId = "Unbekannter Benutzer";
-                }
-            }
+				var user = await _userManager.FindByIdAsync(feedback.UserId);
+				if (user != null)
+				{
+					feedback.UserId = user.UserName;
+				}
+				else
+				{
+					feedback.UserId = "Unbekannter Benutzer";
+				}
+			}
 
-            return (question, feedbacks);
-        }
+			return (question, feedbacks);
+		}
 
-        public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, int isCorrectAnswerRadio)
+		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, 
+            List<int> correctAnswer, bool isMultipleChoice)
 		{
-            int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
-            if (questionIdNullable.HasValue)
-            {
-                modifiedQuestion.Id = questionIdNullable.Value;
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-                return RedirectToAction("MyQuestions");
-            }
+			int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
+			if (questionIdNullable.HasValue)
+			{
+				modifiedQuestion.Id = questionIdNullable.Value;
+			}
+			else
+			{
+				TempData["ErrorMessage"] =
+					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return RedirectToAction("MyQuestions");
+			}
 
-            // Get the categories from the cache
+			// Get the categories from the cache
 			var categories = CategorieCache.Categories;
 
 			// If the cache is empty, get the categories from the API
@@ -180,53 +194,72 @@ namespace Project_Quizz_Frontend.Controllers
 				CategorieCache.Categories = categories;
 			}
 
-			if(!categories.Any(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId))
+			if (!categories.Any(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId))
 			{
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+				TempData["ErrorMessage"] =
+					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
 			}
 
-            if (isCorrectAnswerRadio < 0 || isCorrectAnswerRadio >= modifiedQuestion.Answers.Count)
+            foreach (var index in correctAnswer)
             {
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+                if (index >= 0 && index < modifiedQuestion.Answers.Count)
+                {
+                    modifiedQuestion.Answers[index].IsCorrectAnswer = true;
+                }
             }
 
-			modifiedQuestion.Answers[isCorrectAnswerRadio].IsCorrectAnswer = true;
-
             var category = categories.Find(x => x.CategorieId == modifiedQuestion.Categorie.CategorieId);
-            if (category == null)
-            {
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+			if (category == null)
+			{
+				TempData["ErrorMessage"] =
+					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
 			}
 
 			modifiedQuestion.Categorie.Name = category.Name;
+            modifiedQuestion.IsMultipleChoice = isMultipleChoice;
 
             var userId = _userManager.GetUserId(User);
 			modifiedQuestion.UserId = userId;
 
-            var response = await _quizApiService.UpdateQuestion(modifiedQuestion);
+			var response = await _quizApiService.UpdateQuestion(modifiedQuestion);
 
 			if (response.StatusCode != HttpStatusCode.OK)
 			{
 				HttpContext.Session.Remove("QuestionId");
-                TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-                return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
+				TempData["ErrorMessage"] =
+					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
+				return RedirectToAction("EditQuestion", new { questionId = questionIdNullable.Value });
 			}
 
-            TempData["UpdateComplete"] = "Vorgang erfolgreich abgeschlossen";
-            return RedirectToAction("MyQuestions");
-        }
+			TempData["UpdateComplete"] = "Vorgang erfolgreich abgeschlossen";
+			return RedirectToAction("MyQuestions");
+		}
 
-        [HttpPost]
-		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, int? correctAnswer)
+		[HttpPost]
+		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, List<int> correctAnswer)
 		{
-			if (correctAnswer.HasValue)
+			if (model.IsMultipleChoice)
 			{
 				for (int i = 0; i < model.Answers.Count; i++)
 				{
-					model.Answers[i].IsCorrectAnswer = i == correctAnswer.Value;
+					model.Answers[i].IsCorrectAnswer = correctAnswer.Contains(i);
+				}
+			}
+			else
+			{
+				if (correctAnswer.Any())
+				{
+					for (int i = 0; i < model.Answers.Count; i++)
+					{
+						model.Answers[i].IsCorrectAnswer = i == correctAnswer.First();
+					}
+				}
+				else
+				{
+					TempData["ErrorMessage"] = "Bitte geben Sie mindestens eine korrekte Antwort an!";
+					return RedirectToAction("CreateQuestion");
 				}
 			}
 
@@ -236,14 +269,15 @@ namespace Project_Quizz_Frontend.Controllers
 
 			if (response.IsSuccessStatusCode)
 			{
-				TempData["SuccessMessage"] = "Die Frage wurde erfoglreich erstellt!";
+				TempData["SuccessMessage"] = "Die Frage wurde erfolgreich erstellt!";
 				return RedirectToAction("CreateQuestion");
 			}
 			else
 			{
-				TempData["ErrorMessage"] = "Leider gab es ein Problem beim erstellen deiner Frage!";
+				TempData["ErrorMessage"] = "Leider gab es ein Problem beim Erstellen Ihrer Frage!";
 				return RedirectToAction("CreateQuestion");
 			}
 		}
+
 	}
 }
