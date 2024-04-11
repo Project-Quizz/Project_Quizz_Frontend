@@ -2,12 +2,14 @@
 
 @{
     var orderedOverallList = Model.OrderByDescending(x => x.TotalPointWorth).ToList();
+    int count = 1;
 }
 
 <table id="" class="display hover" style="width:100%">
     <caption>Highscore Tabelle Gesamt</caption>
     <thead>
         <tr>
+            <th class="text-start">Platz</th>
             <th>Username</th>
             <th>Spiele</th>
             <th>Punktwert</th>
@@ -16,11 +18,25 @@
     <tbody>
         @foreach (var user in orderedOverallList)
         {
-            <tr>
-                <td>@user.UserId</td>
-                <td>@user.TotalGames</td>
-                <td>@user.TotalPointWorth</td>
-            </tr>
+            if (ViewBag.UserName == user.UserId)
+            {
+                <tr style="background-color:darksalmon">
+                    <td class="text-start">@count.ToString()</td>
+                    <td class="text-start">@user.UserId</td>
+                    <td>@user.TotalGames</td>
+                    <td>@user.TotalPointWorth</td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td class="text-start">@count.ToString()</td>
+                    <td class="text-start">@user.UserId</td>
+                    <td>@user.TotalGames</td>
+                    <td>@user.TotalPointWorth</td>
+                </tr>
+            }
+            count++;
         }
     </tbody>
 </table>
