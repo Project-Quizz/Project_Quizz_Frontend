@@ -109,6 +109,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(question);
 		}
 
+		public IActionResult MyProgress()
+		{
+			return View();
+		}
+
         private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)> GetSelectedQuestion(int questionId)
         {
             var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
