@@ -1,11 +1,19 @@
 ﻿@model QuizMatchOverviewUserDto
 
 @{
-    var pointWorth = Model.TotalPointsMulti / Model.TotalMultiGamesCount;
-    if (Model.TotalMultiGamesCount < 6)
+    int pointWorth;
+    if (Model.TotalMultiGamesCount == 0)
     {
-        var pointWorthFactor = pointWorth / 1.5;
-        pointWorth = (int)Math.Round(pointWorthFactor);
+        pointWorth = 0;
+    }
+    else
+    {
+        pointWorth = Model.TotalPointsMulti / Model.TotalMultiGamesCount;
+        if (Model.TotalMultiGamesCount < 6)
+        {
+            var pointWorthFactor = pointWorth / 1.5;
+            pointWorth = (int)Math.Round(pointWorthFactor);
+        }
     }
 }
 
