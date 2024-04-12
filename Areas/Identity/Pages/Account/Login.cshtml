@@ -101,6 +101,7 @@
                     <div class="col-lg-6 mb-5 mb-lg-0">
                         <div class="card">
                             <div class="card-body py-5 px-md-5">
+                                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                                 <form id="account" method="post">
                                     <div class="form-outline mb-4" data-mdb-input-init>
                                         <input asp-for="Input.UserName" class="form-control" autocomplete="name" aria-required="true" />

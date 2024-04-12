@@ -55,14 +55,18 @@ namespace Project_Quizz_Frontend.Controllers
                 quizList = new List<GetMultiQuizzesFromUserDto>();
             } else
             {
-                foreach (var quiz in quizList)
+                for (int i = quizList.Count - 1; i >= 0; i--)
                 {
+                    var quiz = quizList[i];
                     var opponend = _userManager.Users.FirstOrDefault(x => x.Id == quiz.OpponentUser);
                     if (opponend == null)
                     {
-                        quiz.OpponentUser = "Anonym";
+                        quizList.RemoveAt(i);
                     }
-                    quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                    else
+                    {
+                        quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                    }
                 }
             }
             return View(quizList);
