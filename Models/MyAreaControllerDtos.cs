@@ -9,6 +9,7 @@ namespace Project_Quizz_Frontend.Models
         public int? QuestionCount { get; set; }
         public string QuestionText { get; set; }
         public List<QuizAnswersDto> Answers { get; set; }
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class QuizAnswersDto

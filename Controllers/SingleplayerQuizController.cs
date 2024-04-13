@@ -90,6 +90,9 @@ namespace Project_Quizz_Frontend.Controllers
 
 			if (statusCode == HttpStatusCode.OK)
 			{
+                // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
+                quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
+
                 if (HttpContext.Session.GetString("QuizQuestion") != null)
                 {
                     HttpContext.Session.Remove("QuizQuestion");
@@ -104,57 +107,85 @@ namespace Project_Quizz_Frontend.Controllers
 			return RedirectToAction("Index", "Home");
         }
 
-		[HttpPost]
-		public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
-		{
-			var userId = _userManager.GetUserId(User);
-			var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
-			var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
-			var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
+        [HttpPost]
+        public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
+        {
+            var userId = _userManager.GetUserId(User);
+            var quizQuestionJson = HttpContext.Session.GetString("QuizQuestion");
+            var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
+            var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
-			if (selectedAnswerIds.IsNullOrEmpty())
-			{
+            quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
+
+			var correctAnswerIds = quizQuestion.Answers
+                .Where(a => a.IsCorrectAnswer)
+				.Select(a => a.Id)
+				.ToList();
+
+			var allCorrectAnswersSelected = correctAnswerIds
+                .All(selectedAnswerIds.Contains) && correctAnswerIds.Count == selectedAnswerIds.Count;
+
+            if (allCorrectAnswersSelected)
+            {
+                // Wenn alle richtigen Antworten und keine falschen Antworten ausgewählt wurden, markiere die Frage als richtig
+                foreach (var answer in answers)
+                {
+                    answer.IsCorrectAnswer = true;
+                }
+            }
+            else
+            {
+                // Wenn alle richtigen Antworten und keine falschen Antworten ausgewählt wurden, markiere die Frage als richtig
+                foreach (var answer in answers)
+                {
+                    answer.IsCorrectAnswer = false;
+                }
+            }
+
+            if (selectedAnswerIds.IsNullOrEmpty())
+            {
                 TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
                 return View("SingleQuizSession", quizQuestion);
             }
 
-			var updateSinbgleQuizSessionObj = new UpdateSingleQuizSessionDto
-			{
-				QuizId = quizQuestion.QuizId,
-				QuestionId = quizQuestion.QuestionId,
-				GivenAnswerIds = new List<SingleQuizGivenAnswerIdsDto>(),
-				UserId = userId,
-			};
+            var updateSingleQuizSessionObj = new UpdateSingleQuizSessionDto
+            {
+                QuizId = quizQuestion.QuizId,
+                QuestionId = quizQuestion.QuestionId,
+                GivenAnswerIds = new List<SingleQuizGivenAnswerIdsDto>(),
+                UserId = userId,
+            };
 
-			foreach (var answer in answers)
-			{
-				updateSinbgleQuizSessionObj.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsDto
-				{
-					QuizQuestionAnswerId = answer.Id,
-				});
-			}
+            foreach (var answer in answers)
+            {
+                updateSingleQuizSessionObj.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsDto
+                {
+                    QuizQuestionAnswerId = answer.Id,
+                });
+            }
 
-			var response = await _singleplayerApiService.UpdateSingleQuizSession(updateSinbgleQuizSessionObj);
+            var response = await _singleplayerApiService.UpdateSingleQuizSession(updateSingleQuizSessionObj);
 
 			if(response.StatusCode == HttpStatusCode.BadRequest)
 			{
 				TempData["ErrorMessageBadRequest"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
-				return View("SingleQuizSession", quizQuestion);
+                return View("SingleQuizSession", quizQuestion);
 			}
 
 			if(response.StatusCode == HttpStatusCode.Unauthorized)
 			{
 				TempData["ErrorMessageUnauthorized"] = "Eine bereits beantwortete Frage kann nicht nocheinmal Beantwortet werden. Um fortzufahren klicken Sie bitte auf \"Nächste Frage\"";
-				return View("SingleQuizSession", quizQuestion);
+                return View("SingleQuizSession", quizQuestion);
 			}
 
-			var viewModel = new SoloQuizAnswerResultViewModel
-			{
-				QuizId = quizQuestion.QuizId,
-				QuizQuestionDto = quizQuestion,
-				GivenAnswerIds = new List<SingleQuizGivenAnswerIdsViewModel>(),
-				QuestionCount = quizQuestion.QuestionCount - 1
-			};
+            var viewModel = new SoloQuizAnswerResultViewModel
+            {
+                QuizId = quizQuestion.QuizId,
+                QuizQuestionDto = quizQuestion,
+                GivenAnswerIds = new List<SingleQuizGivenAnswerIdsViewModel>(),
+                QuestionCount = quizQuestion.QuestionCount - 1,
+                IsMultipleChoice = quizQuestion.IsMultipleChoice,
+            };
 
 			foreach (var answer in answers)
 			{
@@ -168,17 +199,17 @@ namespace Project_Quizz_Frontend.Controllers
 			if (response.StatusCode == HttpStatusCode.Accepted)
 			{
 				viewModel.QuizComplete = true;
-				return View("SingleQuizAnswerResult", viewModel);
+                return View("SingleQuizAnswerResult", viewModel);
 			}
 
 			if(response.StatusCode == HttpStatusCode.OK)
 			{
 				viewModel.QuizComplete = false;
-				return View("SingleQuizAnswerResult", viewModel);
+                return View("SingleQuizAnswerResult", viewModel);
 			}
 
 			TempData["ErrorMessage"] = "Es ist ein Fehler aufgetreten, bitte versuche es nochmal.";
-			return View("SingleQuizSession", quizQuestion);
+            return View("SingleQuizSession", quizQuestion);
 
 		}
 
