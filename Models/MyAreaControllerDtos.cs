@@ -9,6 +9,7 @@ namespace Project_Quizz_Frontend.Models
         public int? QuestionCount { get; set; }
         public string QuestionText { get; set; }
         public List<QuizAnswersDto> Answers { get; set; }
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class QuizAnswersDto
@@ -16,6 +17,7 @@ namespace Project_Quizz_Frontend.Models
         public int Id { get; set; }
         public string AnswerText { get; set; }
         public bool IsCorrectAnswer { get; set; }
+        public bool IsSelected { get; set; }
     }
 
     public class GetQuestionForEditingDto
@@ -25,6 +27,7 @@ namespace Project_Quizz_Frontend.Models
         public string UserId { get; set; }
         public CategorieIdDto Categorie { get; set; }
         public List<QuizAnswersDto> Answers { get; set; }
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class CreateQuizQuestionDto
@@ -36,7 +39,7 @@ namespace Project_Quizz_Frontend.Models
             CategorieId = 1
         };
         public List<AnswerViewModel> Answers { get; set; } = new List<AnswerViewModel>();
-
+        public bool IsMultipleChoice { get; set; }
     }
 
     public class AnswerViewModel

@@ -145,7 +145,10 @@ namespace Project_Quizz_Frontend.Controllers
 
             if (statusCode == HttpStatusCode.OK)
             {
-                if (HttpContext.Session.GetString("MultiQuizQuestion") != null)
+	            // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
+	            quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
+
+				if (HttpContext.Session.GetString("MultiQuizQuestion") != null)
                 {
                     HttpContext.Session.Remove("MultiQuizQuestion");
                 }
@@ -183,6 +186,37 @@ namespace Project_Quizz_Frontend.Controllers
             var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
             var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
+            // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
+            quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
+
+            // Erhalten Sie die Ids der korrekten Antworten
+            var correctAnswerIds = quizQuestion.Answers.Where(a => a.IsCorrectAnswer).Select(a => a.Id).ToList();
+
+            // Prüfe, ob alle korrekten Antworten ausgewählt wurden und keine zusätzlichen falschen Antworten ausgewählt sind
+            bool allCorrectAnswersSelected = selectedAnswerIds.All(id => correctAnswerIds.Contains(id)) &&
+                                             correctAnswerIds.All(id => selectedAnswerIds.Contains(id)) &&
+                                             correctAnswerIds.Count == selectedAnswerIds.Count;
+
+            var viewModel = new MultiQuizAnswerResultViewModel
+            {
+                QuizId = quizQuestion.QuizId,
+                QuizQuestionDto = quizQuestion,
+                GivenAnswerIds = new List<MultiQuizGivenAnswerIdsViewModel>(),
+                QuestionCount = quizQuestion.QuestionCount - 1,
+                IsMultipleChoice = quizQuestion.IsMultipleChoice,
+                IsAnswerCorrect = allCorrectAnswersSelected,
+            };
+
+            // Füge die gegebenen Antworten zur ViewModel-Liste hinzu
+            foreach (var answer in answers)
+            {
+                viewModel.GivenAnswerIds.Add(new MultiQuizGivenAnswerIdsViewModel
+                {
+                    // Setzen der IsCorrectAnswer-Eigenschaft basierend auf der Antwort
+                    QuizQuestionAnswerId = answer.Id,
+                    IsCorrectAnswer = answer.IsCorrectAnswer,
+                });
+            }
             if (selectedAnswerIds.IsNullOrEmpty())
             {
                 TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
@@ -219,15 +253,7 @@ namespace Project_Quizz_Frontend.Controllers
 				return View("MultiQuizSession", quizQuestion);
 			}
 
-            var viewModel = new MultiQuizAnswerResultViewModel
-            {
-                QuizId = quizQuestion.QuizId,
-                QuizQuestionDto = quizQuestion,
-                GivenAnswerIds = new List<MultiQuizGivenAnswerIdsViewModel>(),
-				QuestionCount = quizQuestion.QuestionCount - 1
-            };
-
-            foreach(var answer in answers)
+            foreach (var answer in answers)
             {
                 viewModel.GivenAnswerIds.Add(new MultiQuizGivenAnswerIdsViewModel
                 {

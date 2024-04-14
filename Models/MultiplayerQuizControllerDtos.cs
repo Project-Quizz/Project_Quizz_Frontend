@@ -7,6 +7,8 @@
 		public List<MultiQuizGivenAnswerIdsViewModel> GivenAnswerIds { get; set; }
         public bool QuizComplete { get; set; }
         public int? QuestionCount { get; set; }
+        public bool IsMultipleChoice { get; set; }
+        public bool IsAnswerCorrect { get; set; }
     }
 
 	public class MultiQuizGivenAnswerIdsViewModel
