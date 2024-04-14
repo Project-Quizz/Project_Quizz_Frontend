@@ -7,6 +7,9 @@ using System.Diagnostics;
 
 namespace Project_Quizz_Frontend.Controllers
 {
+	/// <summary>
+	/// Home Controller
+	/// </summary>
     [Authorize]
     public class HomeController : Controller
 	{
@@ -14,6 +17,12 @@ namespace Project_Quizz_Frontend.Controllers
         private readonly QuizApiService _quizApiService;
         private readonly UserManager<IdentityUser> _userManager;
 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="quizApiService">API Injection</param>
+		/// <param name="userManager">Identity injection for user management</param>
         public HomeController(ILogger<HomeController> logger, QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_logger = logger;
@@ -21,16 +30,28 @@ namespace Project_Quizz_Frontend.Controllers
 			_userManager = userManager;
 		}
 
+		/// <summary>
+		/// Index
+		/// </summary>
+		/// <returns>Index view</returns>
 		public IActionResult Index()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Privacy
+		/// </summary>
+		/// <returns>Return private view</returns>
 		public IActionResult Privacy()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Highscore
+		/// </summary>
+		/// <returns>Return Highscore View</returns>
 		public async Task<IActionResult> Highscore()
 		{
 			var highscoreInformation = await _quizApiService.GetHighscoreData();
@@ -40,6 +61,7 @@ namespace Project_Quizz_Frontend.Controllers
                 return View(new List<HighscoreDataDto>());
             }
 
+			/// Remove all users that are not in the database anymore
             try
             {
                 for (int i = highscoreInformation.Count - 1; i >= 0; i--)

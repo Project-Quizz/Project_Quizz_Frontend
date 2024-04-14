@@ -11,6 +11,9 @@ using System.Net;
 
 namespace Project_Quizz_Frontend.Controllers
 {
+    /// <summary>
+    /// Controller for Multiplayer-Quiz
+    /// </summary>
     [Authorize]
     public class MultiplayerQuizController : Controller
     {
@@ -25,6 +28,10 @@ namespace Project_Quizz_Frontend.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Index for Multiplayer-Quiz
+        /// </summary>
+        /// <returns>Return the index for multiplayer</returns>
         public async Task<IActionResult> MultiplayerIndex()
         {
             var notificationCount = await LoadMultiplayerNotification();
@@ -32,21 +39,39 @@ namespace Project_Quizz_Frontend.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz-Session
+        /// </summary>
+        /// <param name="newQuestion">New or next question as GetQuizQuestionDto</param>
+        /// <returns>Return MultiQuizSession view</returns>
         public IActionResult MultiQuizSession(GetQuizQuestionDto newQuestion)
         {
             return View(newQuestion);
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz-Answer-Result
+        /// </summary>
+        /// <param name="answerResult">The result of the quiz session from user as MultiQuizAnswerResultViewModel</param>
+        /// <returns>Return MultiQuizAnswerResult view</returns>
         public IActionResult MultiQuizAnswerResult(MultiQuizAnswerResultViewModel answerResult)
         {
             return View(answerResult);
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz-Complete-Result
+        /// </summary>
+        /// <returns>Return MultiQuizCompleteResult</returns>
         public IActionResult MultiQuizCompleteResult()
         {
             return View();
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz overview of open challenges
+        /// </summary>
+        /// <returns>Return ChallengesOverview</returns>
         public async Task<IActionResult> ChallengesOverview()
         {
             var quizList = await LoadChallengesFromUser();
@@ -55,6 +80,7 @@ namespace Project_Quizz_Frontend.Controllers
                 quizList = new List<GetMultiQuizzesFromUserDto>();
             } else
             {
+                /// Get the opponent user name
                 for (int i = quizList.Count - 1; i >= 0; i--)
                 {
                     var quiz = quizList[i];
@@ -72,6 +98,10 @@ namespace Project_Quizz_Frontend.Controllers
             return View(quizList);
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz select opponent for new quiz
+        /// </summary>
+        /// <returns>Return SelectOpponent view</returns>
         public async Task<IActionResult> SelectOpponent()
         {
             var userName = _userManager.GetUserName(User);
@@ -83,6 +113,11 @@ namespace Project_Quizz_Frontend.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Multiplayer-Quiz settings for new quiz
+        /// </summary>
+        /// <param name="selectedOpponent">The opponent that was selected in SelectOpponent view</param>
+        /// <returns>Return MultiplayerSettings view</returns>
         public async Task<IActionResult> MultiplayerSettings(string selectedOpponent)
         {
             var users = await _userManager.Users.Select(u => u.UserName).ToListAsync();
@@ -92,12 +127,11 @@ namespace Project_Quizz_Frontend.Controllers
                 return RedirectToAction("SelectOpponent");
             }
 
+            /// Save the selected opponent in the session
             HttpContext.Session.SetString("SelectedOpponent", selectedOpponent);
 
-            // Get the categories from the cache
             var categories = CategorieCache.Categories;
 
-            //If the cache is empty, get the categories from the API
             if (categories == null)
             {
 				categories = await _quizApiService.GetAllCategoriesAsync();
@@ -108,6 +142,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return View();
         }
 
+        /// <summary>
+        /// Create a new multiplayer session
+        /// </summary>
+        /// <param name="categorieId">The categorie from the new quiz, that was selected in MultiplayerSettings view</param>
+        /// <returns>Return RedirectToAction</returns>
         public async Task<IActionResult> CreateMultiplayerSession(int categorieId)
         {
             var userOne = _userManager.GetUserId(User);
@@ -137,15 +176,20 @@ namespace Project_Quizz_Frontend.Controllers
             return RedirectToAction("GetQuestion", new { quizId = response.CreatedQuizSessionId });
         }
 
+        /// <summary>
+        /// Get the next question for the quiz
+        /// </summary>
+        /// <param name="quizId">Id of the quiz for the next question</param>
+        /// <returns>Return MultiQuizSession view with actual question</returns>
         public async Task<IActionResult> GetQuestion(int quizId)
         {
             var userId = _userManager.GetUserId(User);
 
             var (quizQuestion, statusCode) = await _multiQuizApiService.GetQuestionForMultiQuiz(quizId, userId);
 
+            /// Check if the response is OK
             if (statusCode == HttpStatusCode.OK)
             {
-	            // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
 	            quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
 
 				if (HttpContext.Session.GetString("MultiQuizQuestion") != null)
@@ -162,6 +206,11 @@ namespace Project_Quizz_Frontend.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// If a quiz is completed, show the result
+        /// </summary>
+        /// <param name="quizId">Id of the quiz</param>
+        /// <returns>Return MultiQuizCompleteResult view</returns>
         public async Task<IActionResult> QuizComplete(int quizId)
         {
             var userId = _userManager.GetUserId(User);
@@ -172,12 +221,18 @@ namespace Project_Quizz_Frontend.Controllers
                 return View("MultiQuizCompleteResult", quizResult);
             }
 
+            /// Remove the session
 			HttpContext.Session.Remove("MultiQuizQuestion");
 
 			TempData["ErrorMessage"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
 			return View("MultiQuizCompleteResult", quizResult);
 		}
 
+        /// <summary>
+        /// Submit the answer for the question and check if the answer is correct or not and check if the quiz is completed
+        /// </summary>
+        /// <param name="selectedAnswerIds">The selected answers from user</param>
+        /// <returns>Return the MultiQuizAnswerResult view</returns>
 		[HttpPost]
         public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
         {
@@ -247,6 +302,7 @@ namespace Project_Quizz_Frontend.Controllers
 				return View("MultiQuizSession", quizQuestion);
 			}
 
+            /// Check if the given answer was also given 
 			if (response.StatusCode == HttpStatusCode.Unauthorized)
 			{
 				TempData["ErrorMessageUnauthorized"] = "Eine bereits beantwortete Frage kann nicht nocheinmal Beantwortet werden. Um fortzufahren klicken Sie bitte auf \"Nächste Frage\"";
@@ -262,12 +318,14 @@ namespace Project_Quizz_Frontend.Controllers
                 });
             }
 
+            /// Check if the quiz is completed
             if (response.StatusCode == HttpStatusCode.Accepted)
             {
                 viewModel.QuizComplete = true;
 				return View("MultiQuizAnswerResult", viewModel);
 			}
 
+            /// Check if the quiz is not completed
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				viewModel.QuizComplete = false;
@@ -278,6 +336,10 @@ namespace Project_Quizz_Frontend.Controllers
 			return View("MultiQuizSession", quizQuestion);
 		}
 
+        /// <summary>
+        /// Load all challenges (multiplayer quizzes) from logged user
+        /// </summary>
+        /// <returns>Return a List<GetMultiQuizzesFromUserDto></returns>
         private async Task<List<GetMultiQuizzesFromUserDto>> LoadChallengesFromUser()
         {
             var userId = _userManager.GetUserId(User);
@@ -293,6 +355,10 @@ namespace Project_Quizz_Frontend.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Load all multiplayer notifications for the logged user
+        /// </summary>
+        /// <returns>Return the open multiplayer games as int to show as notification</returns>
         private async Task<int> LoadMultiplayerNotification()
         {
             var userId = _userManager.GetUserId(User);
