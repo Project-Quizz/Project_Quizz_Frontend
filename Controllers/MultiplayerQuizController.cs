@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
@@ -9,6 +11,7 @@ using System.Net;
 
 namespace Project_Quizz_Frontend.Controllers
 {
+    [Authorize]
     public class MultiplayerQuizController : Controller
     {
 		private readonly MultiplayerApiService _multiQuizApiService;
@@ -52,14 +55,18 @@ namespace Project_Quizz_Frontend.Controllers
                 quizList = new List<GetMultiQuizzesFromUserDto>();
             } else
             {
-                foreach (var quiz in quizList)
+                for (int i = quizList.Count - 1; i >= 0; i--)
                 {
+                    var quiz = quizList[i];
                     var opponend = _userManager.Users.FirstOrDefault(x => x.Id == quiz.OpponentUser);
                     if (opponend == null)
                     {
-                        quiz.OpponentUser = "Anonym";
+                        quizList.RemoveAt(i);
                     }
-                    quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                    else
+                    {
+                        quiz.OpponentUser = await _userManager.GetUserNameAsync(opponend);
+                    }
                 }
             }
             return View(quizList);
@@ -209,6 +216,11 @@ namespace Project_Quizz_Frontend.Controllers
                     QuizQuestionAnswerId = answer.Id,
                     IsCorrectAnswer = answer.IsCorrectAnswer,
                 });
+
+            if (selectedAnswerIds.IsNullOrEmpty())
+            {
+                TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
+                return View("MultiQuizSession", quizQuestion);
             }
 
             var updateMultiQuizSessionObj = new UpdateMultiQuizSessionDto

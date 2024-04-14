@@ -5,7 +5,15 @@
     var resultSilver = Model.SingleSilverCount + Model.MultiSilverCount;
     var resultBronze = Model.SingleBronzeCount + Model.MultiBronzeCount;
     var playCount = Model.TotalSingleGamesCount + Model.TotalMultiGamesCount;
-    var pointWorth = Model.TotalPoints / playCount;
+    int pointWorth;
+    if(playCount == 0)
+    {
+        pointWorth = 0;
+    }
+    else
+    {
+        pointWorth = Model.TotalPoints / playCount;
+    }
     if (playCount < 6)
     {
         var pointWorthFactor = pointWorth / 1.5;

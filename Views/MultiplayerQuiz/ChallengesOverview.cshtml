@@ -12,14 +12,20 @@
         <div class="card-header text-center d-flex justify-content-between align-items-center">
             <div></div>
             <h2>Offene Herausforderungen</h2>
-            <button type="submit" class="btn btn-success" id="confirmButton" disabled>Quiz Laden</button>
+            @if (Model.Where(x => x.UserCompletedQuiz == false).Count() == 0 || !Model.Any())
+            {
+                <button class="btn btn-success" disabled>Quiz Laden</button>
+            } else
+            {
+                <button type="submit" class="btn btn-success" id="confirmButton" disabled>Quiz Laden</button>
+            }
         </div>
         <div class="card-body">
             <div>
                 <input hidden name="quizId" id="selectedQuiz" value="" type="text" />
             </div>
             <table id="quizOverview" class="display hover" style="width:100%">
-                <caption>Übersicht der User für den Multiplayer</caption>
+                <caption>Offene Herausforderungen</caption>
                 <thead>
                     <tr>
                         <th class="text-start">Erstellt am</th>

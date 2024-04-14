@@ -23,6 +23,18 @@
 	Feedback erfolgreich eingereicht
 </div>
 
+<div class="alert alert-danger"
+	 role="alert"
+	 id="ErrorMessage"
+	 data-mdb-position="top-right"
+	 data-mdb-stacking="true"
+	 data-mdb-width="300px"
+	 data-mdb-append-to-body="true"
+	 style="display: none;">
+	<i class="far fa-circle-check me-2"></i>
+	Es gab ein Problem beim verarbeiten deines Feedback. Bitte probiere es später nochmal!
+</div>
+
 <div class="card text-center">
 	@if (Model.IsAnswerCorrect)
 	{
@@ -79,6 +91,9 @@
 		</form>
 		@if (Model.QuizComplete)
 		{
+			<button type="button" class="btn btn-primary" data-mdb-modal-init data-mdb-target="#feedbackModal">
+				Feedback
+			</button>
 			<button class="btn btn-success" onclick="location.href='@Url.Action("QuizComplete", "MultiplayerQuiz", new { quizId = Model.QuizId})'">Quiz Abschließen</button>
 		}
 	</div>
@@ -102,15 +117,15 @@
 				</div>
 				<div class="modal-body">
 					<div class="form-outline" data-mdb-input-init>
-						<textarea class="form-control" rows="4" name="feedback"></textarea>
+						<textarea class="form-control" rows="4" name="feedback" required></textarea>
 						<label class="form-label" for="textAreaExample">Ihr Feedback...</label>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">
-						Close
+						Schließen
 					</button>
-					<button id="submitFeedback" type="button" class="btn btn-success">Save changes</button>
+					<button id="submitFeedback" type="button" class="btn btn-success" disabled>Absenden</button>
 				</div>
 			</div>
 		</form>
@@ -122,6 +137,12 @@
 @section scripts {
 	<script>
 		$(document).ready(function () {
+
+			$('textarea[name="feedback"]').on('input', function () {
+				var feedbackText = $(this).val().trim();
+				$('#submitFeedback').prop('disabled', feedbackText.length === 0);
+			});
+
 			$('#submitFeedback').click(function () {
 				var questionId = $('input[name="questionId"]').val();
 				var feedback = $('textarea[name="feedback"]').val();
@@ -133,22 +154,23 @@
 						questionId: questionId,
 						feedback: feedback
 					},
-					success: function () {
+					success: function (response) {
 						$('#feedbackModal').modal('hide');
 
-						var successDiv = document.getElementById("SuccessMessage");
-						if (successDiv) {
-							successDiv.style.display = "block";
-							setTimeout(function () {
-								successDiv.style.display = "none";
-							}, 6000);
+						if (response.success) {
+							$('#SuccessMessage').show().delay(6000).fadeOut();
+						} else {
+							$('#ErrorMessage').show().delay(6000).fadeOut();
 						}
 					},
 					error: function () {
-						alert('Es gab einen Fehler beim Senden des Feedbacks.');
+						$('#feedbackModal').modal('hide');
+						$('#ErrorMessage').show().delay(6000).fadeOut();
 					}
 				});
 			});
+
+			$('textarea[name="feedback"]').trigger('input');
 		});
 	</script>
 }

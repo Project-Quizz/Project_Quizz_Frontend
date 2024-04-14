@@ -47,7 +47,7 @@
                             data-mdb-target="#collapseTwo"
                             aria-expanded="false"
                             aria-controls="collapseTwo">
-                        Singleplayer Übersicht
+                        Einzelspieler Highscore
                     </button>
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-mdb-parent="#accordionExample">
@@ -67,7 +67,7 @@
                             data-mdb-target="#collapseThree"
                             aria-expanded="false"
                             aria-controls="collapseThree">
-                        Multiplayer Übersicht
+                        Mehrspieler Highscore
                     </button>
                 </h2>
                 <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-mdb-parent="#accordionExample">
@@ -91,8 +91,6 @@
         $(document).ready(function () {
             const tableHighscore = new DataTable('table.display', {
                 pagingType: 'full_numbers',
-                scrollX: true,
-                ordering: false,
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/de-DE.json'
                 }

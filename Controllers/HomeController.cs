@@ -40,19 +40,30 @@ namespace Project_Quizz_Frontend.Controllers
                 return View(new List<HighscoreDataDto>());
             }
 
-			try
-			{
-                foreach (var user in highscoreInformation)
+            try
+            {
+                for (int i = highscoreInformation.Count - 1; i >= 0; i--)
                 {
+                    var user = highscoreInformation[i];
                     var userObj = _userManager.Users.FirstOrDefault(x => x.Id == user.UserId);
-                    user.UserId = await _userManager.GetUserNameAsync(userObj);
+                    if (userObj == null)
+                    {
+                        highscoreInformation.RemoveAt(i);
+                    }
+                    else
+                    {
+                        user.UserId = await _userManager.GetUserNameAsync(userObj);
+                    }
                 }
             }
-			catch (Exception ex)
+            catch (Exception ex)
 			{
                 TempData["ErrorMessage"] = "Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
                 return View(new List<HighscoreDataDto>());
             }
+
+			var actualUser = _userManager.GetUserName(User);
+			ViewBag.UserName = actualUser;
 
 			return View(highscoreInformation);
 		}
