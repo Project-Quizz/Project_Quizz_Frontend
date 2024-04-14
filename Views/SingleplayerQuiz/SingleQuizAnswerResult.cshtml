@@ -45,7 +45,7 @@
 	else
 	{
 		<div class="alert alert-danger">
-			Diese Antwort ist leider Falsch!
+			Diese Antwort ist leider falsch!
 		</div>
 	}
 
@@ -66,13 +66,13 @@
 							<div class="form-check">
 								@if (Model.IsMultipleChoice)
 								{
-									<input class="form-check-input" type="checkbox" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "")/>
-									<label class="form-check-label @(isAnswerGiven ? (answer.IsCorrectAnswer ? "text-success" : "text-danger"))" for="@answer.Id" style="@(answer.IsCorrectAnswer || !answer.IsCorrectAnswer ? "font-weight: bold;" : "")">@answer.AnswerText</label>
+									<input class="form-check-input" type="checkbox" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
+									<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="font-weight: bold;">@answer.AnswerText</label>
 								}
 								else
 								{
-									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "")/>
-									<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="@(answer.IsCorrectAnswer || !answer.IsCorrectAnswer ? "font-weight: bold;" : "")">@answer.AnswerText</label>
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
+									<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="font-weight: bold;">@answer.AnswerText</label>
 								}
 							</div>
 						</div>
@@ -105,7 +105,7 @@
 
 <!-- Feedback Modal -->
 <div class="modal top fade" id="feedbackModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-mdb-backdrop="true" data-mdb-keyboard="true">
-  <div class="modal-dialog modal-lg ">
+	<div class="modal-dialog modal-lg ">
 		<form asp-controller="QuestionFeedback" asp-action="CreateFeedbackForQuestion">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -126,8 +126,8 @@
 					<button id="submitFeedback" type="button" class="btn btn-success">Save changes</button>
 				</div>
 			</div>
-	  </form>
-  </div>
+		</form>
+	</div>
 </div>
 
 
@@ -168,4 +168,3 @@
 		});
 	</script>
 }
-

@@ -24,7 +24,7 @@
 </div>
 
 <div class="card text-center">
-	@if (Model.GivenAnswerIds != null && Model.GivenAnswerIds.All(x => x.IsCorrectAnswer))
+	@if (Model.IsAnswerCorrect)
 	{
 		<div class="alert alert-success">
 			Die Antwort ist richtig!
@@ -33,9 +33,10 @@
 	else
 	{
 		<div class="alert alert-danger">
-			Diese Antwort ist leider Falsch!
+			Diese Antwort ist leider falsch!
 		</div>
 	}
+
 	<div class="card-header">
 		<h2>Frage @completedQuestions</h2>
 	</div>
@@ -50,8 +51,16 @@
 						bool isAnswerGiven = Model.GivenAnswerIds.Any(givenAnswer => givenAnswer.QuizQuestionAnswerId == answer.Id);
 						<div class="col-md-6 form-group">
 							<div class="form-check">
-								<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
-								<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="@(answer.IsCorrectAnswer || !answer.IsCorrectAnswer ? "font-weight: bold;" : "")">@answer.AnswerText</label>
+								@if (Model.IsMultipleChoice)
+								{
+									<input class="form-check-input" type="checkbox" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
+									<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="font-weight: bold;">@answer.AnswerText</label>
+								}
+								else
+								{
+									<input class="form-check-input" type="radio" name="selectedAnswerId" id="@answer.Id" value="@answer.Id" disabled @(isAnswerGiven ? "checked" : "") />
+									<label class="form-check-label @(answer.IsCorrectAnswer ? "text-success" : "text-danger")" for="@answer.Id" style="font-weight: bold;">@answer.AnswerText</label>
+								}
 							</div>
 						</div>
 					}

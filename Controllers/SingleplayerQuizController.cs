@@ -5,10 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Project_Quizz_Frontend.Models;
 using Project_Quizz_Frontend.Services;
-using System.Linq;
 using System.Net;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 
 namespace Project_Quizz_Frontend.Controllers
@@ -115,6 +112,7 @@ namespace Project_Quizz_Frontend.Controllers
             var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
             var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
+            // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
             quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
 
 			// Erhalten Sie die Ids der korrekten Antworten

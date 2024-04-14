@@ -58,7 +58,15 @@
 						{
 							<div class="col-md-6 form-group">
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="selectedAnswerIds" id="@answer.Id" value="@answer.Id" />
+									@if (Model.IsMultipleChoice)
+									{
+										<input class="form-check-input" type="checkbox" name="selectedAnswerIds" id="@answer.Id" value="@answer.Id" />
+										<input type="hidden" name="selectedAnswerIds" value="" />
+									}
+									else
+									{
+										<input class="form-check-input" type="radio" name="selectedAnswerIds" id="@answer.Id" value="@answer.Id" required />
+									}
 									<label class="form-check-label" for="@answer.Id">@answer.AnswerText</label>
 								</div>
 							</div>

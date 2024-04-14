@@ -60,7 +60,7 @@
         }
     </div>
     <div class="card-body">
-        @if (Model.Opponent.QuizComplete == true)
+        @if (Model.Opponent.QuizComplete)
         {
             <h5 class="card-title mb-5">Dein Gegner hat @correctAnswersOpponent / 5 Fragen richtig beantwortet</h5>
         } else
