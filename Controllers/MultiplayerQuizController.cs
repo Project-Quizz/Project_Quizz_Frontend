@@ -216,7 +216,7 @@ namespace Project_Quizz_Frontend.Controllers
                     QuizQuestionAnswerId = answer.Id,
                     IsCorrectAnswer = answer.IsCorrectAnswer,
                 });
-
+            }
             if (selectedAnswerIds.IsNullOrEmpty())
             {
                 TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
