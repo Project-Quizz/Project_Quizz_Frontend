@@ -36,7 +36,7 @@
 </div>
 
 <div class="card text-center">
-	@if (Model.GivenAnswerIds != null && Model.GivenAnswerIds.All(x => x.IsCorrectAnswer))
+	@if (Model.IsAnswerCorrect)
 	{
 		<div class="alert alert-success">
 			Die Antwort ist richtig!
@@ -48,9 +48,11 @@
 			Diese Antwort ist leider Falsch!
 		</div>
 	}
+
 	<div class="card-header">
 		<h2>Frage @completedQuestions</h2>
 	</div>
+
 	<div class="card-body">
 		<form method="post">
 			<label asp-for="@Model.QuizQuestionDto.QuestionText"><h5>@Model.QuizQuestionDto.QuestionText</h5></label>

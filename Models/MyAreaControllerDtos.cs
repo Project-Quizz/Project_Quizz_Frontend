@@ -17,6 +17,7 @@ namespace Project_Quizz_Frontend.Models
         public int Id { get; set; }
         public string AnswerText { get; set; }
         public bool IsCorrectAnswer { get; set; }
+        public bool IsSelected { get; set; }
     }
 
     public class GetQuestionForEditingDto

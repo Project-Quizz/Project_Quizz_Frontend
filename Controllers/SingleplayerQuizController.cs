@@ -117,29 +117,33 @@ namespace Project_Quizz_Frontend.Controllers
 
             quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
 
-			var correctAnswerIds = quizQuestion.Answers
-                .Where(a => a.IsCorrectAnswer)
-				.Select(a => a.Id)
-				.ToList();
+			// Erhalten Sie die Ids der korrekten Antworten
+            var correctAnswerIds = quizQuestion.Answers.Where(a => a.IsCorrectAnswer).Select(a => a.Id).ToList();
 
-			var allCorrectAnswersSelected = correctAnswerIds
-                .All(selectedAnswerIds.Contains) && correctAnswerIds.Count == selectedAnswerIds.Count;
+            // Prüfe, ob alle korrekten Antworten ausgewählt wurden und keine zusätzlichen falschen Antworten ausgewählt sind
+            bool allCorrectAnswersSelected = selectedAnswerIds.All(id => correctAnswerIds.Contains(id)) &&
+                                             correctAnswerIds.All(id => selectedAnswerIds.Contains(id)) &&
+                                             correctAnswerIds.Count == selectedAnswerIds.Count;
 
-            if (allCorrectAnswersSelected)
+            var viewModel = new SoloQuizAnswerResultViewModel
             {
-                // Wenn alle richtigen Antworten und keine falschen Antworten ausgewählt wurden, markiere die Frage als richtig
-                foreach (var answer in answers)
-                {
-                    answer.IsCorrectAnswer = true;
-                }
-            }
-            else
+                QuizId = quizQuestion.QuizId,
+                QuizQuestionDto = quizQuestion,
+                GivenAnswerIds = new List<SingleQuizGivenAnswerIdsViewModel>(),
+                QuestionCount = quizQuestion.QuestionCount - 1,
+                IsMultipleChoice = quizQuestion.IsMultipleChoice,
+                IsAnswerCorrect = allCorrectAnswersSelected,
+            };
+
+			// Füge die gegebenen Antworten zur ViewModel-Liste hinzu
+            foreach (var answer in answers)
             {
-                // Wenn alle richtigen Antworten und keine falschen Antworten ausgewählt wurden, markiere die Frage als richtig
-                foreach (var answer in answers)
+                viewModel.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsViewModel
                 {
-                    answer.IsCorrectAnswer = false;
-                }
+					// Setzen der IsCorrectAnswer-Eigenschaft basierend auf der Antwort
+                    QuizQuestionAnswerId = answer.Id,
+                    IsCorrectAnswer = answer.IsCorrectAnswer,
+                });
             }
 
             if (selectedAnswerIds.IsNullOrEmpty())
@@ -177,15 +181,6 @@ namespace Project_Quizz_Frontend.Controllers
 				TempData["ErrorMessageUnauthorized"] = "Eine bereits beantwortete Frage kann nicht nocheinmal Beantwortet werden. Um fortzufahren klicken Sie bitte auf \"Nächste Frage\"";
                 return View("SingleQuizSession", quizQuestion);
 			}
-
-            var viewModel = new SoloQuizAnswerResultViewModel
-            {
-                QuizId = quizQuestion.QuizId,
-                QuizQuestionDto = quizQuestion,
-                GivenAnswerIds = new List<SingleQuizGivenAnswerIdsViewModel>(),
-                QuestionCount = quizQuestion.QuestionCount - 1,
-                IsMultipleChoice = quizQuestion.IsMultipleChoice,
-            };
 
 			foreach (var answer in answers)
 			{

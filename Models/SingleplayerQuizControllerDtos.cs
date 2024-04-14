@@ -10,6 +10,7 @@ namespace Project_Quizz_Frontend.Models
         public bool QuizComplete { get; set; }
         public int? QuestionCount { get; set; }
         public bool IsMultipleChoice { get; set; }
+        public bool IsAnswerCorrect { get; set; }
     }
 
     public class SingleQuizGivenAnswerIdsViewModel
@@ -51,6 +52,7 @@ namespace Project_Quizz_Frontend.Models
         public int id { get; set; }
         public string answerText { get; set; }
         public bool isCorrectAnswer { get; set; }
+        public bool isSelected { get; set; }
     }
 
     public class GetSingleQuizzesFromUserDto
