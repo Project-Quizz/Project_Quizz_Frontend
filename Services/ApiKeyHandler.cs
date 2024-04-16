@@ -1,5 +1,8 @@
 ﻿namespace Project_Quizz_Frontend.Services
 {
+    /// <summary>
+    /// Handler für die API-Key-Authentifizierung
+    /// </summary>
     public class ApiKeyHandler : DelegatingHandler
     {
         private readonly string _apiKey;

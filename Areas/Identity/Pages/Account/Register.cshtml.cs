@@ -74,7 +74,7 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Username muss angegeben werden!")]
             [DataType(DataType.Text)]
             [Display(Name = "User Name")]
             public string UserName { get; set; }
@@ -83,8 +83,8 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Email-Adresse muss angegeben werden!")]
+            [EmailAddress(ErrorMessage = "Die angegebene Email ist keine valide Adresse!")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
@@ -92,10 +92,10 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Bitte vergebe ein Passwort!")]
             [StringLength(100, ErrorMessage = "Das {0} muss mindestens {2} und maximal {1} Zeichen lang sein.", MinimumLength = 10)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Passwort")]
             public string Password { get; set; }
 
             /// <summary>
@@ -103,8 +103,8 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Passwort bestätigen")]
+            [Compare("Password", ErrorMessage = "Die eingegebenen Passwörter stimmen nicht überein.")]
             public string ConfirmPassword { get; set; }
         }
 

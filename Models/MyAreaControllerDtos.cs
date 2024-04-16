@@ -2,6 +2,9 @@
 
 namespace Project_Quizz_Frontend.Models
 {
+    /// <summary>
+    /// DTO to get quiz question
+    /// </summary>
     public class GetQuizQuestionDto
     {
         public int QuestionId { get; set; }
@@ -12,6 +15,9 @@ namespace Project_Quizz_Frontend.Models
         public bool IsMultipleChoice { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get quiz answers
+    /// </summary>
     public class QuizAnswersDto
     {
         public int Id { get; set; }
@@ -20,6 +26,9 @@ namespace Project_Quizz_Frontend.Models
         public bool IsSelected { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get quiz question for editing
+    /// </summary>
     public class GetQuestionForEditingDto
     {
         public int Id { get; set; }
@@ -30,6 +39,9 @@ namespace Project_Quizz_Frontend.Models
         public bool IsMultipleChoice { get; set; }
     }
 
+    /// <summary>
+    /// DTO to create quiz question
+    /// </summary>
     public class CreateQuizQuestionDto
     {
         public string QuestionText { get; set; }
@@ -42,6 +54,9 @@ namespace Project_Quizz_Frontend.Models
         public bool IsMultipleChoice { get; set; }
     }
 
+    /// <summary>
+    /// DTO to for the answers of a question
+    /// </summary>
     public class AnswerViewModel
     {
         [Required(ErrorMessage = "The answer text is required.")]
@@ -50,17 +65,26 @@ namespace Project_Quizz_Frontend.Models
         public bool IsCorrectAnswer { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get the categories
+    /// </summary>
     public class CategorieIdDto
     {
         public int CategorieId { get; set; }
         public string Name { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get the categories
+    /// </summary>
     public static class CategorieCache
     {
         public static List<CategorieIdDto> Categories { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get all questions from a user
+    /// </summary>
     public class GetAllQuestionsFromUserDto
     {
         public int QuestionId { get; set; }
@@ -69,6 +93,9 @@ namespace Project_Quizz_Frontend.Models
         public int FeedbackCount { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get the overview of all matches
+    /// </summary>
     public class QuizMatchOverviewUserDto
     {
         public string UserId { get; set; }
@@ -87,6 +114,9 @@ namespace Project_Quizz_Frontend.Models
         public int MultiBronzeCount { get; set; }
     }
 
+    /// <summary>
+    /// DTO to get the highscore data
+    /// </summary>
     public class HighscoreDataDto
     {
         public string UserId { get; set; }

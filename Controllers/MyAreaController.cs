@@ -9,48 +9,56 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Project_Quizz_Frontend.Controllers
 {
+	/// <summary>
+	/// MyAreaController is responsible for the user's area.
+	/// </summary>
 	[Authorize]
 	public class MyAreaController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
 		private readonly UserManager<IdentityUser> _userManager;
 
+		/// <summary>
+		/// Constructor of the MyAreaController.
+		/// </summary>
+		/// <param name="quizApiService"></param>
+		/// <param name="userManager"></param>
 		public MyAreaController(QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
 			_userManager = userManager;
 		}
 
-		[HttpGet]
+        /// <summary>
+        /// Returns the view for creating a question.
+        /// </summary>
+        /// <returns>Returns the view for creating a question.</returns>
+        [HttpGet]
 		public async Task<IActionResult> CreateQuestion()
 		{
 			var model = new CreateQuizQuestionDto();
 
-			// Get the categories from the cache
 			var categories = CategorieCache.Categories;
 
-			// If the cache is empty, get the categories from the API
 			if (categories == null)
 			{
 				categories = await _quizApiService.GetAllCategoriesAsync();
 				CategorieCache.Categories = categories;
 			}
 
-			// Pass categories to the view through ViewBag or ViewData
 			ViewBag.Categories = categories ?? new List<CategorieIdDto>();
 
 			model = new CreateQuizQuestionDto
 			{
 				Answers = new List<AnswerViewModel>
 				{
-					new AnswerViewModel(), // Initialize with empty answers
+					new AnswerViewModel(), 
 					new AnswerViewModel(),
 					new AnswerViewModel(),
 					new AnswerViewModel()
 				}
 			};
 
-			//Set the first answer as the correct one
 			if (model.Answers.Count > 0)
 			{
 				model.Answers[0].IsCorrectAnswer = true;
@@ -59,12 +67,20 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(model);
 		}
 
-		public IActionResult MyAreaIndex()
+        /// <summary>
+        /// Returns the view for the user's area.
+        /// </summary>
+        /// <returns>Returns MyAreaIndex view</returns>
+        public IActionResult MyAreaIndex()
 		{
 			return View();
 		}
 
-		public async Task<IActionResult> MyQuestions()
+        /// <summary>
+        /// Index for the user's questions.
+        /// </summary>
+        /// <returns>Return the view MyQuestions with all created questions</returns>
+        public async Task<IActionResult> MyQuestions()
 		{
 			var userId = _userManager.GetUserId(User);
 
@@ -79,6 +95,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(questions);
 		}
 
+        /// <summary>
+        /// Edit a question.
+        /// </summary>
+        /// <param name="questionId">The id of the question to edit</param>
+        /// <returns>Return the EditQuestion view</returns>
         public async Task<IActionResult> EditQuestion(int questionId)
         {
             (GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedback) = await GetSelectedQuestion(questionId);
@@ -112,7 +133,10 @@ namespace Project_Quizz_Frontend.Controllers
             return View(question);
         }
 
-
+        /// <summary>
+        /// Load the view for the user's progress.
+        /// </summary>
+        /// <returns>Return MyProgress view</returns>
         public async Task<IActionResult> MyProgress()
 		{
 			var userId = _userManager.GetUserId(User);
@@ -133,7 +157,12 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(userInformation);
 		}
 
-		private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)>
+        /// <summary>
+        /// Get the selected Question.
+        /// </summary>
+        /// <param name="questionId">Question id</param>
+        /// <returns>Return the question as GetQuestionForEditingDto and the feedback GetQuizQuestionFeedbackDto as list</returns>
+        private async Task<(GetQuestionForEditingDto question, List<GetQuizQuestionFeedbackDto> feedbacks)>
 			GetSelectedQuestion(int questionId)
 		{
 			var (question, statusCode) = await _quizApiService.GetQuestionForEditing(questionId);
@@ -169,7 +198,14 @@ namespace Project_Quizz_Frontend.Controllers
 			return (question, feedbacks);
 		}
 
-		public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, 
+        /// <summary>
+        /// Update a question that was modified.
+        /// </summary>
+        /// <param name="modifiedQuestion">GetQuestionForEditingDto</param>
+        /// <param name="correctAnswer">The correct answers</param>
+        /// <param name="isMultipleChoice">Bool</param>
+        /// <returns>Return RedirectToAction</returns>
+        public async Task<IActionResult> UpdateModifiedQuestion(GetQuestionForEditingDto modifiedQuestion, 
             List<int> correctAnswer, bool isMultipleChoice)
 		{
 			int? questionIdNullable = HttpContext.Session.GetInt32("QuestionId");
@@ -237,7 +273,13 @@ namespace Project_Quizz_Frontend.Controllers
 			return RedirectToAction("MyQuestions");
 		}
 
-		[HttpPost]
+        /// <summary>
+        /// Transfer created question to db
+        /// </summary>
+        /// <param name="model">CreateQuizQuestionDto</param>
+        /// <param name="correctAnswer">List of correct answers</param>
+        /// <returns>Return RedirectToAction</returns>
+        [HttpPost]
 		public async Task<IActionResult> CreateQuestionOnDB(CreateQuizQuestionDto model, List<int> correctAnswer)
 		{
 			if (model.IsMultipleChoice)
