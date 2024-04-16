@@ -10,7 +10,6 @@ namespace Project_Quizz_Frontend.Controllers
 	/// <summary>
 	/// Is responsible for the Home view.
 	/// </summary>
-    [Authorize]
     public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
@@ -30,15 +29,23 @@ namespace Project_Quizz_Frontend.Controllers
 			_userManager = userManager;
 		}
 
-		/// <summary>
-		/// Indexes this instance.
-		/// </summary>
-		/// <returns>Return Index view</returns>
-		public IActionResult Index()
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        [Authorize]
+        public IActionResult Index()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Impressums this instance.
+		/// </summary>
+		/// <returns>Return Impressum view</returns>
+		public IActionResult Impressum()
+		{
+            return View();
+        }
 		/// <summary>
 		/// Privacies this instance.
 		/// </summary>
@@ -48,11 +55,12 @@ namespace Project_Quizz_Frontend.Controllers
 			return View();
 		}
 
-		/// <summary>
-		/// Highscores this instance.
-		/// </summary>
-		/// <returns>Return Highscore view</returns>
-		public async Task<IActionResult> Highscore()
+        /// <summary>
+        /// Highscores this instance.
+        /// </summary>
+        /// <returns>Return Highscore view</returns>
+        [Authorize]
+        public async Task<IActionResult> Highscore()
 		{
 			var highscoreInformation = await _quizApiService.GetHighscoreData();
 			if (highscoreInformation == null)

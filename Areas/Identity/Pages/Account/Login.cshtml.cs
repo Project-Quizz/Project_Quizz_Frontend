@@ -80,7 +80,7 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "ANgemeldet bleiben?")]
+            [Display(Name = "Angemeldet bleiben?")]
             public bool RememberMe { get; set; }
         }
 
