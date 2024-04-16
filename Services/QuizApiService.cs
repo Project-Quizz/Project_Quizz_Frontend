@@ -43,7 +43,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<List<CategorieIdDto>> GetAllCategoriesAsync()
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/CategorieWorkshop/GetAllCategories");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/CategorieWorkshop/GetAllCategories");
 		if (response.IsSuccessStatusCode)
 		{
 			var categories = await response.Content.ReadFromJsonAsync<List<CategorieIdDto>>();
@@ -59,7 +59,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<(List<GetAllQuestionsFromUserDto> Result, HttpStatusCode StatusCode)> GetAllQuestionsFromUser(string userId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetAllQuestionsFromUser?userId={userId}");
 
 		if(response.IsSuccessStatusCode)
 		{
@@ -76,7 +76,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<(GetQuestionForEditingDto Result, HttpStatusCode StatusCode)> GetQuestionForEditing(int questionId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetQuestion?id={questionId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetQuestion?id={questionId}");
 
 		if(response.IsSuccessStatusCode)
 		{
@@ -95,7 +95,7 @@ public class QuizApiService
 	{
 		var json = System.Text.Json.JsonSerializer.Serialize(modifiedQuestion);
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
-		var response = await _httpClient.PutAsync($"{_apiTestUrl}/QuestionWorkshop/UpdateQuestion", content);
+		var response = await _httpClient.PutAsync($"{_apiBaseUrl}/QuestionWorkshop/UpdateQuestion", content);
 		return response;
 	}
 
@@ -108,7 +108,7 @@ public class QuizApiService
 	{
 		var json = System.Text.Json.JsonSerializer.Serialize(feedbackObj);
 		var content = new StringContent(json, Encoding.UTF8, "application/json");
-		var response = await _httpClient.PostAsync($"{_apiTestUrl}/QuestionWorkshop/CreateFeedbackForQuestion", content);
+		var response = await _httpClient.PostAsync($"{_apiBaseUrl}/QuestionWorkshop/CreateFeedbackForQuestion", content);
 		return response;
 	}
 
@@ -119,7 +119,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<(List<GetQuizQuestionFeedbackDto> Result, HttpStatusCode StatusCode)> GetQuizQuestionFeedback(int questionId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/QuestionWorkshop/GetQuestionFeedbacks?questionId={questionId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/QuestionWorkshop/GetQuestionFeedbacks?questionId={questionId}");
 
 		if(response.IsSuccessStatusCode)
 		{
@@ -136,7 +136,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<QuizMatchOverviewUserDto> GetQuizMatchOverviewFromUser(string userId)
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/UserInformation/GetUserProgressInformation?userId={userId}");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/UserInformation/GetUserProgressInformation?userId={userId}");
 
 		if(response.IsSuccessStatusCode)
 		{
@@ -152,7 +152,7 @@ public class QuizApiService
     /// <returns>Return the response from the API</returns>
     public async Task<List<HighscoreDataDto>> GetHighscoreData()
 	{
-		var response = await _httpClient.GetAsync($"{_apiTestUrl}/UserInformation/GetHigscroeData");
+		var response = await _httpClient.GetAsync($"{_apiBaseUrl}/UserInformation/GetHigscroeData");
 
 		if(response.IsSuccessStatusCode)
 		{
