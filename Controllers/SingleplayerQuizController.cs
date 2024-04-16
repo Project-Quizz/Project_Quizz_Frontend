@@ -10,13 +10,22 @@ using System.Net;
 
 namespace Project_Quizz_Frontend.Controllers
 {
-	[Authorize]
+    /// <summary>
+    /// SingleplayerQuizController is responsible for managing singleplayer quiz sessions and settings.
+    /// </summary>
+    [Authorize]
 	public class SingleplayerQuizController : Controller
 	{
 		private readonly QuizApiService _quizApiService;
         private readonly SingleplayerApiService _singleplayerApiService;
         private readonly UserManager<IdentityUser> _userManager;
 
+		/// <summary>
+		/// Constructor for SingleplayerQuizController
+		/// </summary>
+		/// <param name="quizApiService"></param>
+		/// <param name="singleplayerApiService"></param>
+		/// <param name="userManager"></param>
 		public SingleplayerQuizController(QuizApiService quizApiService,SingleplayerApiService singleplayerApiService, UserManager<IdentityUser> userManager)
 		{
 			_quizApiService = quizApiService;
@@ -24,28 +33,51 @@ namespace Project_Quizz_Frontend.Controllers
 			_userManager = userManager;
 		}
 
-		public async  Task<IActionResult> SingleplayerIndex()
+        /// <summary>
+        /// Index method for SingleplayerQuizController
+        /// </summary>
+        /// <returns>Return SingleplayerIndex view</returns>
+        public async  Task<IActionResult> SingleplayerIndex()
 		{
             var notificationCount = await LoadSingleplayerNotification();
             ViewBag.NotificationCount = notificationCount.ToString();
             return View();
 		}
 
-		public IActionResult SingleQuizSession(GetQuizQuestionDto newQuizQuestion)
+        /// <summary>
+        /// For displaying the single quiz session
+        /// </summary>
+        /// <param name="newQuizQuestion">The new quiz question as GetQuizQuestionDto</param>
+        /// <returns>Return the SingleQuizSession view</returns>
+        public IActionResult SingleQuizSession(GetQuizQuestionDto newQuizQuestion)
 		{
 			return View(newQuizQuestion);
 		}
 
-		public IActionResult SingleQuizAnswerResult(SoloQuizAnswerResultViewModel answerResult)
+        /// <summary>
+        /// For displaying the single quiz answer result
+        /// </summary>
+        /// <param name="answerResult">The answer reuslt as SoloQuizAnswerResultViewModel</param>
+        /// <returns>Return the SingleQuizAnswerResult view</returns>
+        public IActionResult SingleQuizAnswerResult(SoloQuizAnswerResultViewModel answerResult)
 		{
 			return View(answerResult);
 		}
 
+        /// <summary>
+        /// For displaying the single quiz complete result
+        /// </summary>
+        /// <param name="result">The result of a singleplayer as GetResultFromSingleQuizDto</param>
+        /// <returns>Return the SingleQuizCompleteResult view</returns>
 		public IActionResult SingleQuizCompleteResult(GetResultFromSingleQuizDto result)
 		{
 			return View(result);
 		}
 
+        /// <summary>
+        /// For displaying the singleplayer settings
+        /// </summary>
+        /// <returns>Return the SingleplayerSettings view</returns>
 		public async Task<IActionResult>  SingleplayerSettings()
 		{
 			var categories = await LoadCategories();
@@ -53,6 +85,10 @@ namespace Project_Quizz_Frontend.Controllers
             return View();
 		}
 
+        /// <summary>
+        /// For displaying the overview of open single quizzes
+        /// </summary>
+        /// <returns>Return the OverviewOfOpenSingleQuizzes view</returns>
 		public async Task<IActionResult> OverviewOfOpenSingleQuizzes()
 		{
 			var quizList = await LoadSingleQuizzesFromUser();
@@ -63,7 +99,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(quizList);
 		}
 
-
+        /// <summary>
+        /// TO create a new single quiz session
+        /// </summary>
+        /// <param name="categorieId">The categorie id for the new quiz</param>
+        /// <returns>Return RedirectToAction</returns>
         public async Task<IActionResult> CreateNewSingleQuizSession(int categorieId)
 		{
 			var userId = _userManager.GetUserId(User);
@@ -79,6 +119,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return RedirectToAction("GetQuestion", new { quizId = newQuizSessionId});
 		}
 
+        /// <summary>
+        /// Get the question for a single quiz
+        /// </summary>
+        /// <param name="quizId">Quiz id from where the question comes</param>
+        /// <returns>Return RedirectToAction</returns>
 		public async Task<IActionResult> GetQuestion(int quizId)
 		{
 			var userId = _userManager.GetUserId(User);
@@ -87,7 +132,6 @@ namespace Project_Quizz_Frontend.Controllers
 
 			if (statusCode == HttpStatusCode.OK)
 			{
-                // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
                 quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
 
                 if (HttpContext.Session.GetString("QuizQuestion") != null)
@@ -104,6 +148,11 @@ namespace Project_Quizz_Frontend.Controllers
 			return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Submit the answer for a single quiz
+        /// </summary>
+        /// <param name="selectedAnswerIds">The selected answers as int</param>
+        /// <returns>Return a view depending on the result</returns>
         [HttpPost]
         public async Task<IActionResult> SubmitAnswer(List<int> selectedAnswerIds)
         {
@@ -112,13 +161,11 @@ namespace Project_Quizz_Frontend.Controllers
             var quizQuestion = JsonConvert.DeserializeObject<GetQuizQuestionDto>(quizQuestionJson);
             var answers = quizQuestion.Answers.Where(x => selectedAnswerIds.Contains(x.Id)).ToList();
 
-            // Setzen Sie das IsMultipleChoice-Feld basierend auf der Art der Frage
             quizQuestion.IsMultipleChoice = quizQuestion.Answers.Count(a => a.IsCorrectAnswer) > 1;
 
-			// Erhalten Sie die Ids der korrekten Antworten
             var correctAnswerIds = quizQuestion.Answers.Where(a => a.IsCorrectAnswer).Select(a => a.Id).ToList();
 
-            // Prüfe, ob alle korrekten Antworten ausgewählt wurden und keine zusätzlichen falschen Antworten ausgewählt sind
+            /// Check that all correct answers have been selected
             bool allCorrectAnswersSelected = selectedAnswerIds.All(id => correctAnswerIds.Contains(id)) &&
                                              correctAnswerIds.All(id => selectedAnswerIds.Contains(id)) &&
                                              correctAnswerIds.Count == selectedAnswerIds.Count;
@@ -133,17 +180,17 @@ namespace Project_Quizz_Frontend.Controllers
                 IsAnswerCorrect = allCorrectAnswersSelected,
             };
 
-			// Füge die gegebenen Antworten zur ViewModel-Liste hinzu
+            /// Add the selected answers to the view model
             foreach (var answer in answers)
             {
                 viewModel.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsViewModel
                 {
-					// Setzen der IsCorrectAnswer-Eigenschaft basierend auf der Antwort
                     QuizQuestionAnswerId = answer.Id,
                     IsCorrectAnswer = answer.IsCorrectAnswer,
                 });
             }
 
+            /// If no answer was selected
             if (selectedAnswerIds.IsNullOrEmpty())
             {
                 TempData["ErrorMessageBadRequest"] = "Bitte wähle mindestens eine Antwort aus!";
@@ -158,6 +205,7 @@ namespace Project_Quizz_Frontend.Controllers
                 UserId = userId,
             };
 
+            /// Add the selected answers to the update object
             foreach (var answer in answers)
             {
                 updateSingleQuizSessionObj.GivenAnswerIds.Add(new SingleQuizGivenAnswerIdsDto
@@ -206,6 +254,11 @@ namespace Project_Quizz_Frontend.Controllers
 
 		}
 
+        /// <summary>
+        /// To complete a single quiz
+        /// </summary>
+        /// <param name="quizId">The quiz id to be completed</param>
+        /// <returns>Return SingleQuizCompleteResult view</returns>
 		public async Task<IActionResult> QuizComplete(int quizId)
 		{
 			var userId = _userManager.GetUserId(User);
@@ -222,6 +275,10 @@ namespace Project_Quizz_Frontend.Controllers
 			return View("SingleQuizCompleteResult", quizResult);
 		}
 
+        /// <summary>
+        /// To load the categories
+        /// </summary>
+        /// <returns>Return the loaded CategorieIdDto</returns>
 		private async Task<List<CategorieIdDto>> LoadCategories()
 		{
 			var categories = CategorieCache.Categories;
@@ -234,6 +291,10 @@ namespace Project_Quizz_Frontend.Controllers
 			return categories;
 		}
 
+        /// <summary>
+        /// To load the singleplayer notification
+        /// </summary>
+        /// <returns>Return the result as int</returns>
         private async Task<int> LoadSingleplayerNotification()
         {
             var userId = _userManager.GetUserId(User);
@@ -249,6 +310,10 @@ namespace Project_Quizz_Frontend.Controllers
             return result;
         }
 
+        /// <summary>
+        /// To load the single quizzes from user
+        /// </summary>
+        /// <returns>Return the result GetSingleQuizzesFromUserDto as list</returns>
 		private async Task<List<GetSingleQuizzesFromUserDto>> LoadSingleQuizzesFromUser()
 		{
             var userId = _userManager.GetUserId(User);

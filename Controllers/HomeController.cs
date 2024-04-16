@@ -7,6 +7,9 @@ using System.Diagnostics;
 
 namespace Project_Quizz_Frontend.Controllers
 {
+	/// <summary>
+	/// Is responsible for the Home view.
+	/// </summary>
     [Authorize]
     public class HomeController : Controller
 	{
@@ -14,6 +17,12 @@ namespace Project_Quizz_Frontend.Controllers
         private readonly QuizApiService _quizApiService;
         private readonly UserManager<IdentityUser> _userManager;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="HomeController"/> class.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="quizApiService"></param>
+		/// <param name="userManager"></param>
         public HomeController(ILogger<HomeController> logger, QuizApiService quizApiService, UserManager<IdentityUser> userManager)
 		{
 			_logger = logger;
@@ -21,16 +30,28 @@ namespace Project_Quizz_Frontend.Controllers
 			_userManager = userManager;
 		}
 
+		/// <summary>
+		/// Indexes this instance.
+		/// </summary>
+		/// <returns>Return Index view</returns>
 		public IActionResult Index()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Privacies this instance.
+		/// </summary>
+		/// <returns>Return Privacy view</returns>
 		public IActionResult Privacy()
 		{
 			return View();
 		}
 
+		/// <summary>
+		/// Highscores this instance.
+		/// </summary>
+		/// <returns>Return Highscore view</returns>
 		public async Task<IActionResult> Highscore()
 		{
 			var highscoreInformation = await _quizApiService.GetHighscoreData();
@@ -68,6 +89,10 @@ namespace Project_Quizz_Frontend.Controllers
 			return View(highscoreInformation);
 		}
 
+		/// <summary>
+		/// Errors this instance.
+		/// </summary>
+		/// <returns>Return Error view</returns>
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
