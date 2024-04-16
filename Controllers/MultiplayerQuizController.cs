@@ -37,7 +37,7 @@ namespace Project_Quizz_Frontend.Controllers
         /// <summary>
         /// Index for Multiplayer-Quiz
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Return the index for multiplayer</returns>
         public async Task<IActionResult> MultiplayerIndex()
         {
             var notificationCount = await LoadMultiplayerNotification();
@@ -136,7 +136,7 @@ namespace Project_Quizz_Frontend.Controllers
                 TempData["ErrorMessage"] = "Der ausgewählte User ist leider nicht vorhanden!";
                 return RedirectToAction("SelectOpponent");
             }
-
+            
             /// Set the selected opponent in the session
             HttpContext.Session.SetString("SelectedOpponent", selectedOpponent);
 
@@ -154,9 +154,9 @@ namespace Project_Quizz_Frontend.Controllers
         }
 
         /// <summary>
-        /// Create a multiplayer session
+        /// Create a new multiplayer session
         /// </summary>
-        /// <param name="categorieId"></param>
+        /// <param name="categorieId">The categorie from the new quiz, that was selected in MultiplayerSettings view</param>
         /// <returns>Return RedirectToAction</returns>
         public async Task<IActionResult> CreateMultiplayerSession(int categorieId)
         {
@@ -201,6 +201,7 @@ namespace Project_Quizz_Frontend.Controllers
 
             var (quizQuestion, statusCode) = await _multiQuizApiService.GetQuestionForMultiQuiz(quizId, userId);
 
+
             /// Check if the question was loaded successfully
             if (statusCode == HttpStatusCode.OK)
             {
@@ -235,6 +236,7 @@ namespace Project_Quizz_Frontend.Controllers
                 return View("MultiQuizCompleteResult", quizResult);
             }
 
+            /// Remove the session
 			HttpContext.Session.Remove("MultiQuizQuestion");
 
 			TempData["ErrorMessage"] = "Es gab ein Problem mit der Anfrage. Bitte versuchen Sie es erneut oder wenden Sie sich an den Support.";
@@ -315,6 +317,7 @@ namespace Project_Quizz_Frontend.Controllers
 				return View("MultiQuizSession", quizQuestion);
 			}
 
+            /// Check if the given answer was also given 
 			if (response.StatusCode == HttpStatusCode.Unauthorized)
 			{
 				TempData["ErrorMessageUnauthorized"] = "Eine bereits beantwortete Frage kann nicht nocheinmal Beantwortet werden. Um fortzufahren klicken Sie bitte auf \"Nächste Frage\"";
@@ -331,12 +334,14 @@ namespace Project_Quizz_Frontend.Controllers
                 });
             }
 
+            /// Check if the quiz is completed
             if (response.StatusCode == HttpStatusCode.Accepted)
             {
                 viewModel.QuizComplete = true;
 				return View("MultiQuizAnswerResult", viewModel);
 			}
 
+            /// Check if the quiz is not completed
 			if (response.StatusCode == HttpStatusCode.OK)
 			{
 				viewModel.QuizComplete = false;
@@ -367,6 +372,7 @@ namespace Project_Quizz_Frontend.Controllers
         }
 
         /// <summary>
+
         /// Load the multiplayer notification
         /// </summary>
         /// <returns>Return the result as int</returns>

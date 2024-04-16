@@ -69,6 +69,7 @@ namespace Project_Quizz_Frontend.Controllers
                 return View(new List<HighscoreDataDto>());
             }
 
+			/// Remove all users that are not in the database anymore
             try
             {
                 for (int i = highscoreInformation.Count - 1; i >= 0; i--)
