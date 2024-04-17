@@ -40,6 +40,16 @@
 
 			<div class="d-flex justify-content-center mt-4 mb-4">
 				<div class="row">
+					
+					@if (Model.IsMultipleChoice)
+					{
+						<div class="col-12">
+							<div class="alert alert-info">
+								Bitte kreuzen Sie alle zutreffenden Antworten an.
+							</div>
+						</div>
+					}
+
 					@if (TempData["ErrorMessageUnauthorized"] != null)
 					{
 						@foreach (var answer in Model.Answers)
@@ -51,7 +61,7 @@
 								</div>
 							</div>
 						}
-					} 
+					}
 					else
 					{
 						@foreach (var answer in Model.Answers)
@@ -60,8 +70,8 @@
 								<div class="form-check">
 									@if (Model.IsMultipleChoice)
 									{
-										<input class="form-check-input" type="checkbox" name="selectedAnswerIds" id="@answer.Id" value="@answer.Id" />
-										<input type="hidden" name="selectedAnswerIds" value="" />
+										<input class="form-check-input" type="checkbox" name="selectedAnswerIds" id="@answer.Id" value="@answer.Id"/>
+										<input type="hidden" name="selectedAnswerIds" value=""/>
 									}
 									else
 									{
