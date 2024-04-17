@@ -136,7 +136,7 @@ namespace Project_Quizz_Frontend.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Bitte überprüfe deine Lgin Daten oder registriere dich!");
+                    ModelState.AddModelError(string.Empty, "Bitte überprüfe deine Login Daten oder registriere dich!");
                     return Page();
                 }
             }

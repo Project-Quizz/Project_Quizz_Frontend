@@ -143,15 +143,19 @@ namespace Project_Quizz_Frontend.Controllers
 			var userInformation = await _quizApiService.GetQuizMatchOverviewFromUser(userId);
 			if (userInformation == null)
 			{
-				TempData["ErrorMessage"] =
-					"Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es nochmal oder kontaktieren den Support!";
-				return View(new QuizMatchOverviewUserDto());
-			}
+                return View(new QuizMatchOverviewUserDto
+                {
+                    UserId = userId
+                });
+            }
 
 			if (userId != userInformation.UserId)
 			{
 				TempData["ErrorMessage"] = "Zugriff wurde verweigert";
-				return View(new QuizMatchOverviewUserDto());
+				return View(new QuizMatchOverviewUserDto
+				{
+					UserId = userId
+				});
 			}
 
 			return View(userInformation);
