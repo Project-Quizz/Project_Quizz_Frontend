@@ -288,6 +288,12 @@ namespace Project_Quizz_Frontend.Controllers
 		{
 			if (model.IsMultipleChoice)
 			{
+				if (model.IsMultipleChoice)
+				{
+					TempData["ErrorMessage"] = "Bitte geben Sie bei einem MultipleChoice mindestens zwei korrekte Antworten an!";
+					return RedirectToAction("CreateQuestion");
+				}
+				
 				for (int i = 0; i < model.Answers.Count; i++)
 				{
 					model.Answers[i].IsCorrectAnswer = correctAnswer.Contains(i);

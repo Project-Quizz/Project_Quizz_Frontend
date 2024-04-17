@@ -59,6 +59,11 @@
 				</label>
 			</div>
 
+			<div id="multipleChoiceInfo" class="alert alert-info mt-2" style="display: @(Model.IsMultipleChoice ? "block" : "none")">
+				Bitte markieren Sie mindestens zwei Antworten als richtig.
+			</div>
+
+
 			<div class="row mb-4">
 				@{
 					int i = 0;
@@ -115,5 +120,14 @@
 
         document.querySelector('form').addEventListener('submit', updateAnswerInputs);
         document.getElementById('IsMultipleChoice').addEventListener('change', updateAnswerInputs);
+
+		document.getElementById('IsMultipleChoice').addEventListener('change', function() {
+		var infoDiv = document.getElementById('multipleChoiceInfo');
+			if (this.checked) {
+				infoDiv.style.display = 'block';
+			} else {
+				infoDiv.style.display = 'none';
+			}
+		});
     </script>
 }
