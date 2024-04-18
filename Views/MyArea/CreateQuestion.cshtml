@@ -70,10 +70,9 @@
 					foreach (var answer in Model.Answers)
 					{
 						<div class="col-md-6 form-group mb-4">
-							<!-- Antwort Textfeld -->
-							<input type="text" class="form-control" id="answer_@i" name="Answers[@i].AnswerText" value="@answer.AnswerText" required />
-
-							<!-- Checkbox oder Radio Button für die richtige Antwort -->
+							
+							<input type="text" class="form-control" id="answer_@i" name="Answers[@i].AnswerText" value="@answer.AnswerText" placeholder="Antworttext" required />
+							
 							<div class="form-check form-check-inline">
 								<input class="form-check-input correctAnswer" type="@(Model.IsMultipleChoice ? "checkbox" : "radio")" name="correctAnswer" id="correctAnswer_@i" value="@i" @(answer.IsCorrectAnswer ? "checked='checked'" : "") />
 								<label class="form-check-label" for="correctAnswer_@i">
